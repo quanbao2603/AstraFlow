@@ -1,0 +1,71 @@
+# ==========================================
+# 1. BẢO MẬT TUYỆT ĐỐI (KHÔNG ĐƯỢC PUSH LÊN)
+# ==========================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ==========================================
+# 2. THƯ VIỆN & PHỤ THUỘC (NẶNG MÁY, ĐỂ NPM TỰ TẢI)
+# ==========================================
+node_modules/
+jspm_packages/
+.npm/
+
+# ==========================================
+# 3. KẾT QUẢ BIÊN DỊCH (BUILD/DIST FILES)
+# ==========================================
+# Của Frontend (Vite/React)
+dist/
+dist-ssr/
+build/
+out/
+
+# Của Backend (TypeScript/Node)
+tsc-out/
+.tsbuildinfo
+
+# ==========================================
+# 4. LOGS & DEBUG FILES (RÁC TRONG QUÁ TRÌNH CHẠY)
+# ==========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# 5. DỮ LIỆU LOCAL DATABASE (NẾU CÓ CHẠY DOCKER)
+# ==========================================
+*.db
+*.sqlite
+docker/postgres-data/
+docker/redis-data/
+
+# ==========================================
+# 6. FILE CỦA HỆ ĐIỀU HÀNH & TRÌNH BIÊN DỊCH (IDE)
+# ==========================================
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VSCode / WebStorm / IntelliJ
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
