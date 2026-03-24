@@ -2,8 +2,8 @@ import { IStoryAgent } from './agent.interface';
 
 /**
  * @class PlotMasterAgent
- * @description Agent Đạo Diễn - Nhận ý tưởng thô và phác thảo lập dàn bài toàn truyện hoàn chỉnh (Outline).
- * Áp dụng SRP (Single Responsibility Principle) - Chỉ quan tâm tới KHUNG SƯỜN cốt truyện.
+ * @description Agent Đạo Diễn - Nhận ý tưởng thô và phác thảo dàn bài toàn truyện hoàn chỉnh.
+ * @architecture [Mô hình Lai] Output: 100% Structured JSON để nạp lên Graph DB chuẩn xác 0% Regex.
  */
 export class PlotMasterAgent implements IStoryAgent {
   name = 'Plot Master';

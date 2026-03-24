@@ -2,8 +2,8 @@ import { IStoryAgent } from './agent.interface';
 
 /**
  * @class ContinuityAgent
- * @description Agent Biên kịch Logic - Chống mất trí nhớ ngữ cảnh (Context Drift).
- * Agent này chịu trách nhiệm tra cứu và đồng bộ các Nodes lên **Neo4j Graph Database** để Fact-check cốt truyện.
+ * @description Agent Biên kịch Logic - Kiểm tra Fact-checker và chống lỗi cốt truyện.
+ * @architecture [Mô hình Lai] Output: JSON danh sách Nodes/Edges mutations cập nhật lên Neo4j.
  */
 export class ContinuityAgent implements IStoryAgent {
   name = 'Continuity Edge Planner';

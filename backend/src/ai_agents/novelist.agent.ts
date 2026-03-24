@@ -3,7 +3,7 @@ import { IStoryAgent } from './agent.interface';
 /**
  * @class NovelistAgent
  * @description Agent Nhà văn - Nhận Outline đã kiểm định tính Logic cấu trúc để viết thành chương truyện văn xuôi hoàn chỉnh.
- * Chỉ quan tâm tới hành văn (Prose), nhịp điệu và mô tả cảm giác.
+ * @architecture [Mô hình Lai] Output: Markdown Văn Xuôi thuần (Plain text) tránh lỗi Quote Escape "".
  */
 export class NovelistAgent implements IStoryAgent {
   name = 'Novelist Prose Maker';
