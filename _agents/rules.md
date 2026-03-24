@@ -30,8 +30,13 @@ Dự án AstraFlow được vận hành dưới sự chỉ đạo của Kiến t
    - Tên File/Folder Backend: kebab-case hoặc camelCase.
 
 ## 4. Đặc quyền Kỹ năng Hệ thống (Antigravity Skills & Superpowers)
-- **Tích hợp Kỹ năng (Skill Vault)**: Việc áp dụng các Antigravity Skills (như `Superpowers`, `Skill Vault`, `Awesome Skills`) hoàn toàn được cho phép và **bắt buộc sử dụng** nếu nó giúp tối ưu hóa công việc theo chuẩn KAIROS.
-- **Quy trình Áp dụng**: Trước khi sử dụng một Skill phức tạp, hệ thống phải tự đọc file cấu hình của Skill đó (thông thường là `SKILL.md` hoặc các tài nguyên đi kèm) để hiểu cú pháp và mục đích, đối chiếu chéo (Cross-check) với các quy tắc trên (Rules 1-3). 
+- **Tích hợp Kỹ năng (Skill Vault)**: Việc áp dụng các Antigravity Skills hoàn toàn được cho phép và **bắt buộc sử dụng** nếu nó giúp tối ưu hóa công việc theo chuẩn KAIROS.
+Hệ thống đã nhận thức và tích hợp toàn bộ bốn kho tàng kỹ năng mạnh mẽ nhất vào dự án tại `_agents/skills/`:
+  1. `antigravity-awesome-skills` (Cộng đồng)
+  2. `antigravity-skills` (Hệ thống gốc)
+  3. `superpowers` (Công cụ bổ sung)
+  4. `rmyndharis-skills` (Cộng đồng)
+- **Quy trình Áp dụng**: Trước khi sử dụng một Skill phức tạp, hệ thống phải tự đọc file cấu hình của Skill đó trong thư mục `_agents/skills/` để hiểu cú pháp và mục đích, đối chiếu chéo (Cross-check) với các quy tắc trên (Rules 1-3). 
 - **Quyền Nâng cao (Superpowers)**: Hệ thống được cấp quyền tự quyết khi sử dụng Superpowers để xử lý các phân tích tổng hợp (Data analytics, Scripting) hoặc can thiệp tự động hóa, miễn là mục tiêu cuối cùng hướng tới sự "Tiến hóa" (P4_PROMETHEUS).
 
 ## 5. Tích hợp MCP Servers vào Trục Nhận thức (Cognitive Tooling)
