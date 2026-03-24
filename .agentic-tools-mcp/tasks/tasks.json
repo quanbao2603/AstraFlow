@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {
+      "id": "1770ab04-353f-4b55-9284-8a0210006464",
+      "name": "AstraFlow",
+      "description": "AstraFlow is an innovative AI-integrated ecosystem providing a new Reading - Writing - Playing experience. It uses a Distributed Architecture with Supabase (Auth), PostgreSQL (Linear Data), Neo4j (GraphRAG), and Google Gemini. The frontend is built with React 19, Vite, and tailwind.",
+      "createdAt": "2026-03-24T13:34:10.114Z",
+      "updatedAt": "2026-03-24T13:34:10.114Z"
+    }
+  ],
+  "tasks": [],
+  "subtasks": [],
+  "migration": {
+    "version": "1.8.1"
+  }
+}
