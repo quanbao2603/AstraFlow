@@ -1,8 +1,8 @@
-// src/layouts/PublicLayout.tsx
-import Header from '../components/layouts/Header';
-import Footer from '../components/layouts/Footer';
+import Header from '../components/layouts/header/Header';
+import Footer from '../components/layouts/footer/Footer';
+import { Outlet } from 'react-router-dom';
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default function PublicLayout({ children }: { children?: React.ReactNode }) {
     return (
         <div className="relative min-h-screen flex flex-col font-sans overflow-hidden text-white">
 
@@ -26,7 +26,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
             {/* 4. NỘI DUNG CHÍNH (Lỗ hổng để nhét các trang khác nhau vào) */}
             <main className="flex-grow pt-32 pb-16 relative z-0">
-                {children}
+                {children || <Outlet />}
             </main>
 
             {/* 5. LẮP RÁP FOOTER */}

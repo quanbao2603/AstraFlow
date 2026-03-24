@@ -1,7 +1,6 @@
-// src/components/Header.tsx
-import HeaderLogo from './header/HeaderLogo';
-import HeaderNav from './header/HeaderNav';
-import HeaderAuth from './header/HeaderAuth';
+import HeaderLogo from './HeaderLogo';
+import HeaderNav from './HeaderNav';
+import HeaderAuth from './HeaderAuth';
 
 export default function Header() {
     return (

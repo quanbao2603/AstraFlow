@@ -1,9 +1,11 @@
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../../config/routes';
 import logo from '../../../assets/logo.png';
 
 export default function HeaderLogo() {
     return (
         <div className="flex items-center">
-            <a href="/" className="flex items-center gap-3 group">
+            <Link to={ROUTES.PUBLIC.HOME} className="flex items-center gap-3 group">
                 <img 
                     src={logo} 
                     alt="AstraFlow Logo" 
@@ -12,7 +14,7 @@ export default function HeaderLogo() {
                 <span className="text-2xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400 drop-shadow-sm">
                     AstraFlow
                 </span>
-            </a>
+            </Link>
         </div>
     );
 }

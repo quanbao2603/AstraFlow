@@ -12,31 +12,30 @@ frontend/
 ├── src/                    # Source code of the application
 │   ├── assets/             # Static assets like images, fonts, icons imported in code
 │   ├── components/         # Reusable UI components
-│   │   └── layouts/        # Layout-specific components
-│   │       ├── Footer.tsx  
-│   │       └── Header.tsx  
+│   │   ├── layouts/        # Layout Fragments (Header/Footer)
+│   │   │   ├── header/     # Header.tsx, HeaderLogo.tsx, HeaderAuth.tsx, HeaderNav.tsx
+│   │   │   └── footer/     # Footer.tsx and its sub-parts
+│   │   └── ui/             # Atomic/Generic UI components (Typewriter.tsx)
 │   ├── config/             # Configuration files
-│   │   └── navigation.ts   # Navigation configuration
-│   ├── features/           # Feature-based modules (each containing its own components, hooks, api, etc.)
+│   │   ├── navigation.ts   # Navigation configuration
+│   │   └── routes.ts       # Centralized route constants
+│   ├── features/           # Feature-based/Domain modules (Logic & Components)
+│   │   ├── auth/           # Login, Register, SocialLogin components
+│   │   └── studio/         # Creator Dashboard logic
 │   ├── hooks/              # Custom React hooks
-│   ├── layouts/            # Page layout wrappers
-│   │   └── PublicLayout.tsx
-│   ├── pages/              # Route components/views
-│   ├── routes/             # Routing configuration and route definitions
+│   ├── layouts/            # Page Layout Containers (PublicLayout, AuthLayout, StudioLayout)
+│   ├── pages/              # Route entry points (thin wrappers)
+│   │   ├── home/           
+│   │   ├── auth/           
+│   │   └── studio/         
 │   ├── store/              # Global state management
 │   ├── types/              # TypeScript typings and interfaces
 │   ├── utils/              # Utility functions and helpers
-│   ├── App.tsx             # Root React component
-│   ├── index.css           # Global stylesheet
-│   └── main.tsx            # Application entry point
-├── .gitignore              # Git ignore rules
-├── Architecture.md         # Architecture documentation (this file)
-├── eslint.config.js        # ESLint configuration
-├── index.html              # HTML entry point (contains root div)
-├── package.json            # Project dependencies and scripts
-├── package-lock.json       # Dependency lock file
-├── tsconfig.json           # Base TypeScript configuration
-├── tsconfig.app.json       # TypeScript app-specific configuration
-├── tsconfig.node.json      # TypeScript Node environment configuration
-└── vite.config.ts          # Vite bundler configuration
+│   ├── App.tsx             # Root component (Routing & Layouts)
+│   ├── index.css           # Global styles
+│   └── main.tsx            # App entry point
+├── Architecture.md         # This documentation
+├── index.html              # HTML entry point
+├── package.json            # Dependencies & Scripts
+└── vite.config.ts          # Vite configuration
 ```

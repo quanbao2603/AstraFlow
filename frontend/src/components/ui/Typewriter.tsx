@@ -13,6 +13,10 @@ interface TypewriterProps {
   loop?: boolean;
   /** How long to wait before restarting the loop in ms */
   loopDelay?: number;
+  /** Optional word to highlight */
+  highlightWord?: string;
+  /** Optional class name for the highlighted word */
+  highlightClassName?: string;
 }
 
 export default function Typewriter({ 
@@ -21,7 +25,9 @@ export default function Typewriter({
   className = '', 
   delay = 0,
   loop = false,
-  loopDelay = 3000
+  loopDelay = 3000,
+  highlightWord,
+  highlightClassName = ''
 }: TypewriterProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,9 +62,30 @@ export default function Typewriter({
     }
   }, [currentIndex, text, speed, isStarted, loop, loopDelay]);
 
+  const renderText = () => {
+    if (!highlightWord) return displayedText;
+    
+    const highlightStartIndex = text.indexOf(highlightWord);
+    if (highlightStartIndex === -1) return displayedText;
+    
+    if (displayedText.length <= highlightStartIndex) {
+      return displayedText;
+    }
+    
+    const normalPart = displayedText.substring(0, highlightStartIndex);
+    const highlightedPart = displayedText.substring(highlightStartIndex);
+    
+    return (
+      <>
+        {normalPart}
+        <span className={highlightClassName}>{highlightedPart}</span>
+      </>
+    );
+  };
+
   return (
     <span className={`inline-block ${className}`}>
-      {displayedText}
+      {renderText()}
     </span>
   );
 }

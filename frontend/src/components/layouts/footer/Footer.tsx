@@ -1,7 +1,6 @@
-// src/components/layouts/Footer.tsx
-import FooterBrand from './footer/FooterBrand';
-import FooterLinks from './footer/FooterLinks';
-import FooterSocials from './footer/FooterSocials';
+import FooterBrand from './FooterBrand';
+import FooterLinks from './FooterLinks';
+import FooterSocials from './FooterSocials';
 
 export default function Footer() {
     return (
