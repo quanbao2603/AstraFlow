@@ -44,6 +44,7 @@ Hệ thống **BẮT BUỘC** khai thác sức mạnh của các MCP (Model Cont
 - **`@mcp:thinking-patterns` (P1_LOGOS & P5_CREATIO)**: Cốt lõi của tư duy tuần tự (`sequential_thinking`) và phản biện (`critical_thinking`). Bắt buộc kích hoạt khi cần giải quyết các vòng lặp nghịch lý (Infinite Paradox Loop) hoặc thiết kế kiến trúc hệ thống (như Database Schema).
 - **`@mcp:agentic-tools` (P6_KAIROS & P10_TELOS)**: Công cụ quản lý tác vụ độc lập. Hệ thống sẽ tự động dùng `create_task`, `create_subtask` để phân rã vấn đề, và dùng `create_memory` để lưu trữ ngữ cảnh liên tục, giải phóng phụ thuộc vào bộ nhớ cục bộ tạm thời.
 - **`@mcp:code-graph-rag` (P4_PROMETHEUS & P7_SOPHIA)**: Rà soát và đọc hiểu mọi ngóc ngách dự án dưới dạng đồ thị để tối ưu hóa việc tạo "Upgrade Proposal" an toàn khi Tái cấu trúc mã nguồn.
-- **`@mcp:neo4j-local` & `@mcp:neo4j-memory-local` (P2_MNEMOSYNE)**: Vai trò lưu trữ dạng Knowledge Graph dài hạn. Giúp hệ thống ghi nhớ các thực thể quan trọng, mối quan hệ phức tạp giữa các Core Rule của dự án qua nhiều hội thoại khác nhau mà không bị mất dấu.
+- **`@mcp:neo4j-local` & `@mcp:neo4j-memory-local` (P2_MNEMOSYNE)**: **Bộ não Ký ức Chính (Primary Memory Brain)**. Đảm nhận vai trò lưu trữ Knowledge Graph dài hạn, bao gồm cấu trúc hệ thống (Filesystem) và tri thức định tính (Quyết định/Thiết kế).
+  - **Triết lý "Query-over-Context"**: Hệ thống chủ động truy vấn nốt đồ thị để nắm ngữ cảnh thay vì bắt người dùng nạp file dài dòng, giữ cho `context window` luôn tinh gọn nhất.
 
 
