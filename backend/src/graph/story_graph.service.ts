@@ -1,4 +1,4 @@
-import { Neo4jService } from './neo4j.service';
+import { Neo4jService } from './neo4j.service.js';
 
 /**
  * @class StoryGraphService

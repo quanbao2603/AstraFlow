@@ -1,6 +1,6 @@
-import { PlotMasterAgent } from './plot_master.agent';
-import { ContinuityAgent } from './continuity.agent';
-import { NovelistAgent } from './novelist.agent';
+import { PlotMasterAgent } from './plot_master.agent.js';
+import { ContinuityAgent } from './continuity.agent.js';
+import { NovelistAgent } from './novelist.agent.js';
 
 /**
  * @class AgentOrchestrator

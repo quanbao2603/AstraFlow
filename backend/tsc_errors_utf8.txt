@@ -1,0 +1,8 @@
+﻿src/ai_agents/continuity.agent.ts(1,29): error TS2307: Cannot find module './agent.interface' or its corresponding type declarations.
+src/ai_agents/novelist.agent.ts(1,29): error TS2307: Cannot find module './agent.interface' or its corresponding type declarations.
+src/ai_agents/plot_master.agent.ts(1,29): error TS2307: Cannot find module './agent.interface' or its corresponding type declarations.
+src/controllers/story.controller.ts(1,10): error TS1484: 'Request' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/controllers/story.controller.ts(1,19): error TS1484: 'Response' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/controllers/story.controller.ts(2,30): error TS2307: Cannot find module '../services/story.service' or its corresponding type declarations.
+src/graph/story_graph.service.ts(1,30): error TS2307: Cannot find module './neo4j.service' or its corresponding type declarations.
+src/routes/story.routes.ts(2,33): error TS2307: Cannot find module '../controllers/story.controller' or its corresponding type declarations.

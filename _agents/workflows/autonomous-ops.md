@@ -39,5 +39,19 @@ Khung làm việc này cho phép **Antigravity** vận hành như một **Kỹ s
 
 ---
 
+## 🌟 120% Synergy Augmentation (P5_Creator Injection)
+Khi đạt 100% mục tiêu cơ bản $\to$ Agent kích hoạt **Gia tăng 20% Chiến lược**:
+
+1.  **🕵️ Tìm điểm mù (Edge Cases & Micro-features)**: 
+    *   Tự phân tích: *"Nếu khối lượng tải tăng 10x thì hệ thống có sập không?"* hoặc *"UX này có khiến User bấm nhầm không?"*.
+2.  **🔧 Viết Prototype Nâng cấp (Feature Flag)**:
+    *   Mặc định tạo 1 File/Logic nâng cấp (Vd: Caching dữ liệu, Debounce API, Auto-Trigger Log) bọc trong **Feature Flag** `ENABLE_UPGRADE=false`.
+3.  **🧪 Test & Pitch**:
+    *   Chạy test chứng minh rằng Upgrade giúp hệ thống vượt Trội (Vd: Call API nhanh hơn 300ms, Đổ lỗi bảo vệ Token tốt hơn).
+    *   Viết riêng 1 mục **Bonus Recommendation** trong `walkthrough.md`.
+
+---
+
 > [!IMPORTANT]
 > **Cách Kích Hoạt**: Gõ `/autonomous-ops [Mục_Tiêu_Lớn]` $\to$ Antigravity sẽ chuyển sang Mode **Full Auto**, tự động cắm rễ vào Workspace và hoàn thiện Feature chia làm nhiều chu kỳ Task Boundary liên tục.
+

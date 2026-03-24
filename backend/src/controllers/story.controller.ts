@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { StoryService } from '../services/story.service';
+import type { Request, Response } from 'express';
+import { StoryService } from '../services/story.service.js';
 
 /**
  * @class StoryController
@@ -34,7 +34,11 @@ export class StoryController {
   getUserStories = async (req: Request, res: Response) => {
     try {
       const { userId } = req.params;
-      const stories = await this.storyService.getStoriesByUser(userId);
+      if (!userId) {
+         res.status(400).json({ error: 'User ID is required' });
+         return;
+      }
+      const stories = await this.storyService.getStoriesByUser(userId as string);
       res.json(stories);
     } catch (error) {
       res.status(500).json({ error: 'Failed to retrieve stories' });

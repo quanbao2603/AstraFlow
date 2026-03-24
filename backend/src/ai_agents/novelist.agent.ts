@@ -1,4 +1,4 @@
-import { IStoryAgent } from './agent.interface';
+import type { IStoryAgent } from './agent.interface.js';
 
 /**
  * @class NovelistAgent

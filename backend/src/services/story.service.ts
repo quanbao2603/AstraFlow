@@ -1,4 +1,4 @@
-import { StoryOrchestrator } from '../ai_agents/orchestrator';
+import { AgentOrchestrator } from '../ai_agents/orchestrator.js';
 
 /**
  * @class StoryService
@@ -6,10 +6,10 @@ import { StoryOrchestrator } from '../ai_agents/orchestrator';
  * Tách biệt hoàn toàn khỏi Request/Response HTTP. Áp dụng Single Responsibility (SRP).
  */
 export class StoryService {
-  private orchestrator: StoryOrchestrator;
+  private orchestrator: AgentOrchestrator;
 
   constructor() {
-    this.orchestrator = new StoryOrchestrator();
+    this.orchestrator = new AgentOrchestrator();
   }
 
   /**
@@ -21,7 +21,8 @@ export class StoryService {
   async createStoryInteractive(userId: string, title: string, promptIdea: string): Promise<any> {
     // TODO: 1. Tạo Metadata Story trong bảng Database (Prisma).
     // 2. Kéo Cần gạt Pipeline AI Agent
-    const firstChapterContent = await this.orchestrator.generateNextChapter(promptIdea);
+    const result = await this.orchestrator.generateChapter(promptIdea);
+    const firstChapterContent = result.chapterText;
     
     // TODO: 3. Sinh thêm chapter1 trong DB liên kết.
     return {

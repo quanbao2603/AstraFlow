@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { StoryController } from '../controllers/story.controller';
+import { StoryController } from '../controllers/story.controller.js';
 
 const router = Router();
 const storyController = new StoryController();
@@ -9,7 +9,7 @@ const storyController = new StoryController();
  * @description Kích hoạt luồng Agent Orchestrator sinh chương truyện lai (Hybrid)
  */
 router.post('/generate-chapter', (req, res, next) => {
-    storyController.generateChapter(req, res).catch(next);
+    storyController.createStory(req, res).catch(next);
 });
 
 /**
