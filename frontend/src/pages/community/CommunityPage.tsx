@@ -1,36 +1,7 @@
 import { PenTool } from 'lucide-react';
 import CommunityNav from '../../features/community/components/CommunityNav';
 import CommunityTrending from '../../features/community/components/CommunityTrending';
-import PostCard from '../../features/community/components/PostCard';
-import type { Post } from '../../features/community/types/community';
-
-const MOCK_POSTS: Post[] = [
-  {
-    id: 'p1',
-    title: 'Cách mình tạo Prompt cho nhân vật dạo gần đây!',
-    content: 'Mình vừa khám phá ra công thức tạo chuỗi Prompt cực đẹp cho thể loại Dark Fantasy trên AstraFlow. Đầu tiên các bạn chia nhỏ...',
-    author: { id: 'u1', name: 'ZodiacWriter', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop' },
-    tags: ['prompt_tips', 'dark_fantasy'],
-    likes: 89, comments: 24, createdAt: '2 giờ trước'
-  },
-  {
-    id: 'p2',
-    title: 'Tìm cộng sự viết chung truyện Sci-Fi dài tập 🚀',
-    content: 'Mình đang có Idea về một thế giới đa tầng nơi Robot nắm quyền kiểm soát. Cần một bạn phụ trách về lore building. Inbox mình nhen!',
-    author: { id: 'u2', name: 'NovaSync', role: 'admin' },
-    tags: ['tim_team', 'sci_fi'],
-    likes: 54, comments: 18, createdAt: '5 giờ trước'
-  },
-  {
-    id: 'p3',
-    title: 'Liệu AI có thay thế được cốt truyện lãng mạn?',
-    content: 'Chiều nay mình test thử module Romance thấy cảm xúc viết ra khá mượt, nhưng hình như vẫn thiếu chút "độc bản". Mọi người nghĩ sao?',
-    author: { id: 'u3', name: 'Aesthetic.Vibe' },
-    tags: ['thao_luan', 'romance_ai'],
-    likes: 112, comments: 45, createdAt: 'Hôm qua',
-    image: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=500&auto=format&fit=crop'
-  }
-];
+import EmptyState from '../../features/community/components/EmptyState';
 
 export default function CommunityPage() {
   return (
@@ -56,12 +27,8 @@ export default function CommunityPage() {
             </button>
           </div>
 
-          {/* Post Lists */}
-          <div className="flex flex-col gap-4">
-            {MOCK_POSTS.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
+          {/* Post Lists - Now Empty State */}
+          <EmptyState />
         </div>
 
         {/* Right Sidebar */}
