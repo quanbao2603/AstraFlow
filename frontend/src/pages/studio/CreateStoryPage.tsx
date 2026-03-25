@@ -1,25 +1,141 @@
+import React, { useState } from 'react';
+import { ArrowLeft, Eraser, Sparkles, Play, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+import CoreSettings from '../../features/studio/components/CreateStory/CoreSettings';
+import MainCharacter from '../../features/studio/components/CreateStory/MainCharacter';
+import AdvancedSettings from '../../features/studio/components/CreateStory/AdvancedSettings';
+import WorldBuilding from '../../features/studio/components/CreateStory/WorldBuilding';
+
 export default function CreateStoryPage() {
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState({
+    title: '', theme: '', genre: '', setting: '', mcName: '', mcGender: 'nam', mcBio: '',
+    writingStyle: '', crueltyLevel: 'normal', aiInstructions: '', useSavedExp: true, allowNsfw: false,
+    worldEntities: [{ id: 1, type: 'faction', name: '', description: '', conflict: '' }]
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  const handleAddEntity = () => {
+    setFormData(prev => ({
+      ...prev,
+      worldEntities: [...prev.worldEntities, { id: Date.now(), type: 'faction', name: '', description: '', conflict: '' }]
+    }));
+  };
+
+  const handleRemoveEntity = (id: number) => {
+    setFormData(prev => ({
+      ...prev,
+      worldEntities: prev.worldEntities.filter(entity => entity.id !== id)
+    }));
+  };
+
+  const handleEntityChange = (id: number, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      worldEntities: prev.worldEntities.map(entity =>
+        entity.id === id ? { ...entity, [field]: value } : entity
+      )
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title.trim() || !formData.mcName.trim()) {
+      alert("Vui lòng nhập Tên truyện và Tên nhân vật chính!");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+
+      console.log("Submitting formData:", formData);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      navigate('/studio/library');
+    } catch (error) {
+      console.error("Lỗi:", error);
+      alert("Không thể kết nối đến Server!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto flex flex-col items-center justify-center h-[80vh] text-center">
-      <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center mb-8 shadow-[0_0_40px_-10px_rgba(139,92,246,0.6)]">
-        <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
+    <div className="max-w-4xl mx-auto animate-in fade-in duration-500 pb-16">
+      <div className="mb-10 text-center md:text-left">
+        <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-500">
+          Khởi tạo Tác phẩm mới
+        </h2>
+        <p className="text-slate-400 max-w-lg text-base">
+          Thiết lập các thông số cơ bản để "Bộ não AI" hiểu rõ thế giới và câu chuyện bạn muốn kể dệt nên những cuộc phiêu lưu.
+        </p>
       </div>
-      <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">Khởi tạo Tác phẩm mới</h2>
-      <p className="text-slate-400 max-w-lg mb-8 text-lg">
-        Bắt đầu chặng đường kể chuyện của bạn. Hãy nhập tên truyện để hệ thống tạo không gian làm việc.
-      </p>
-      
-      <div className="w-full max-w-md flex flex-col gap-4">
-        <input 
-          type="text" 
-          placeholder="Nhập tựa đề truyện..." 
-          className="w-full px-5 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-lg focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 text-center"
+
+      <div className="flex flex-col gap-8">
+
+        {/* Step 1: Core Settings */}
+        <CoreSettings formData={formData} onChange={handleChange} />
+
+        {/* Step 2: Main Character */}
+        <MainCharacter formData={formData} onChange={handleChange} />
+
+        {/* Step 3: Advanced Settings */}
+        <AdvancedSettings formData={formData} onChange={handleChange} />
+
+        {/* Step 4: World Building */}
+        <WorldBuilding
+          entities={formData.worldEntities}
+          onAdd={handleAddEntity}
+          onRemove={handleRemoveEntity}
+          onChange={handleEntityChange}
         />
-        <button className="w-full py-4 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold text-lg transition-transform transform hover:scale-[1.02]">
-          Bắt đầu Viết
-        </button>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-5 mt-4 pt-8 border-t border-slate-800/80">
+          <div className="flex items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate('/studio/library')}
+              className="flex items-center gap-2 px-6 py-3 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-xl transition-colors font-semibold"
+            >
+              <ArrowLeft size={16} /> Quay Lại Thư viện
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, title: '', mcName: '', theme: '', mcBio: '' })}
+              className="flex items-center gap-2 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-colors font-semibold"
+            >
+              <Eraser size={16} /> Xóa Nháp
+            </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              type="button"
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-2xl font-bold shadow-lg shadow-violet-500/10 hover:scale-[1.02] transform transition-all duration-300"
+            >
+              <Sparkles size={18} /> AI Tinh Chỉnh Cốt Truyện
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className={`w-full sm:w-auto flex-1 flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-bold shadow-lg transition-all duration-300 ${isSubmitting ? 'bg-emerald-600/50 text-white/50 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white shadow-emerald-500/10 hover:scale-[1.02] transform'}`}
+            >
+              {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} className="fill-current" />}
+              {isSubmitting ? 'Đang khởi tạo thế giới...' : 'Bắt Đầu Sáng Tác'}
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
