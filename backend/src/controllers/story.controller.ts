@@ -1,5 +1,6 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { StoryService } from '../services/story.service.js';
+import { ApiResponse } from '../utils/response.js';
 
 /**
  * @class StoryController
@@ -15,33 +16,33 @@ export class StoryController {
 
   /**
    * @method createStory
+   * @description Tạo truyện mới kết hợp kích hoạt Pipeline AI sinh chương mở đầu.
    * @endpoint `POST /api/stories/interactive`
+   * @param req { title: string, promptIdea: string, userId: string }
    */
-  createStory = async (req: Request, res: Response) => {
+  createStory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { title, promptIdea, userId } = req.body;
       const result = await this.storyService.createStoryInteractive(userId, title, promptIdea);
-      res.status(201).json(result);
+      ApiResponse.success(res, result, 'Story with AI chapter created successfully', 201);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to create AI-generated story' });
+      next(error);
     }
   }
 
   /**
    * @method getUserStories
+   * @description Tra cứu danh sách truyện đã sáng tác của người đọc.
    * @endpoint `GET /api/stories/user/:userId`
+   * @param req.params { userId: string }
    */
-  getUserStories = async (req: Request, res: Response) => {
+  getUserStories = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userId } = req.params;
-      if (!userId) {
-         res.status(400).json({ error: 'User ID is required' });
-         return;
-      }
       const stories = await this.storyService.getStoriesByUser(userId as string);
-      res.json(stories);
+      ApiResponse.success(res, stories, 'Stories retrieved successfully');
     } catch (error) {
-      res.status(500).json({ error: 'Failed to retrieve stories' });
+      next(error);
     }
   }
 }

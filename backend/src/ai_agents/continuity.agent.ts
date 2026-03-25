@@ -1,26 +1,26 @@
-import type { IStoryAgent } from './agent.interface.js';
+import type { IStoryAgent, IStoryContext } from './agent.interface.js';
 
 /**
  * @class ContinuityAgent
- * @description Agent Biên kịch Logic - Kiểm tra Fact-checker và chống lỗi cốt truyện.
- * @architecture [Mô hình Lai] Output: JSON danh sách Nodes/Edges mutations cập nhật lên Neo4j.
+ * @description Agent Kiểm soát Logic - Tra chiếu lên Graph DB liên tục để đảm bảo tính nhất quán (Consistency).
  */
 export class ContinuityAgent implements IStoryAgent {
-  name = 'Continuity Edge Planner';
-  role = 'Logic Editor & Graph Sync';
+  name = 'Continuity Guard';
+  role = 'Logic & Graph Database Verifier';
 
   /**
    * @method execute
-   * @param context { outline: any, current_events: any }
+   * @description Kiểm tra tính đúng đắn logic của sườn truyện trước khi viết.
+   * @param context Ngữ cảnh chứa outline sườn truyện
    */
-  async execute(context: any): Promise<any> {
-    // TODO: 1. Duyệt qua mốc sự kiện vừa sinh ra từ PlotMaster.
-    // TODO: 2. Gửi lệnh tới Graph Database (Neo4j) update trạng thái.
-    // TODO: 3. Đối soát xem nhân vật X đã chết ở Chương 3 chưa? (nếu bị mâu thuẫn báo warning).
+  async execute(context: IStoryContext): Promise<any> {
+    const outline = context.outline;
+    // TODO: 1. Đẩy Outline lên Graph Nodes tạm thời / Query Facts cũ liên quan.
+    // TODO: 2. Kích hoạt Checkers tìm "vết nứt logic" (Ví dụ: Nhân vật chết ở chương 1 xuất hiện chương 2).
     return {
       isLogicConsistent: true,
       warnings: [],
-      graphContextSnapshot: 'Facts list: Char A is holding Sword B...'
+      graphContextSnapshot: 'Check successfully against neo4j: Node(Kael) created.',
     };
   }
 }

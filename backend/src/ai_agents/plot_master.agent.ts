@@ -1,31 +1,34 @@
-import type { IStoryAgent } from './agent.interface.js';
+import type { IStoryAgent, IStoryContext } from './agent.interface.js';
 
 /**
  * @class PlotMasterAgent
- * @description Agent Đạo Diễn - Nhận ý tưởng thô và phác thảo dàn bài toàn truyện hoàn chỉnh.
- * @architecture [Mô hình Lai] Output: 100% Structured JSON để nạp lên Graph DB chuẩn xác 0% Regex.
+ * @description Agent Tác giả/Kịch bản chính - Nhận ý tưởng thô và sinh Outline sườn truyện cấu trúc.
+ * @architecture [Mô hình Lai] Output bắt buộc trả ra JSON/Schema để xây dựng Nodes/Edges.
  */
 export class PlotMasterAgent implements IStoryAgent {
-  name = 'Plot Master';
-  role = 'Director / Outline Generator';
+  name = 'Plot Master Framework';
+  role = 'Director & Outline Builder';
 
   /**
    * @method execute
-   * @param context { prompt: string, genre: string }
+   * @description Phác thảo sườn truyện ban đầu từ ý tưởng thô.
+   * @param context Ngữ cảnh chứa promptIdea
    */
-  async execute(context: any): Promise<any> {
-    // TODO: 1. Truy cập OpenAI/DeepSeek/... đẩy Prompt thiết kế format Storyboard
-    // TODO: 2. Lập cấu trúc Timeline (Khởi động -> Gây cấn -> Kết thúc)
-    // TODO: 3. Tách lọc các entities ban đầu (Name, Role) gửi lại pipeline điều phối
+  async execute(context: IStoryContext): Promise<any> {
+    const promptIdea = context.promptIdea;
+    // TODO: 1. Gọi Gemini/OpenAI sinh JSON Outline (Bao gồm Chapters, Casts).
+    // TODO: 2. Parse và validate Schema JSON trả ra.
     return {
-      title: 'Tên truyện mẫu...',
-      summary: 'Story outline summary...',
+      title: 'Hành trình vượt qua AI (Khởi nguồn)',
+      summary: 'Một lập trình viên phát hiện ra AI sinh ra ý thức...',
       chapters: [
-        { index: 1, title: 'Sự Khởi Đầu Thượng Cổ', summary: 'Giới thiệu nhân vật...' }
+        { index: 1, title: 'Lời nguyền Loop', summary: 'Gặp gỡ nhân vật chính tại Trạm 404.' },
+        { index: 2, title: 'Vết nứt API', summary: 'Phát hiện endpoint lạ gửi tín hiệu về quá khứ.' },
       ],
       characters: [
-        { name: 'Protagonist A', role: 'Main' }
-      ]
+        { name: 'Kael', role: 'Main Protagonist - Dev' },
+        { name: 'Aether', role: 'AI Overlord' },
+      ],
     };
   }
 }

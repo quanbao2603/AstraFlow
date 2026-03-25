@@ -1,24 +1,26 @@
-import type { IStoryAgent } from './agent.interface.js';
+import type { IStoryAgent, IStoryContext } from './agent.interface.js';
 
 /**
  * @class NovelistAgent
- * @description Agent Nhà văn - Nhận Outline đã kiểm định tính Logic cấu trúc để viết thành chương truyện văn xuôi hoàn chỉnh.
- * @architecture [Mô hình Lai] Output: Markdown Văn Xuôi thuần (Plain text) tránh lỗi Quote Escape "".
+ * @description Agent Văn học - Nhận sườn bài đã kiểm duyệt và "vẽ" ra các câu chữ (Nội dung chương mở rộng).
  */
 export class NovelistAgent implements IStoryAgent {
-  name = 'Novelist Prose Maker';
-  role = 'Main Writer';
+  name = 'Novelist Writer';
+  role = 'Prose Generator & Chapter Writer';
 
   /**
    * @method execute
-   * @param context { outline: string, verified_facts: string, writing_style: string }
+   * @description Sáng tác nội dung chi tiết cho một Chương.
+   * @param context Ngữ cảnh chứa outline và validation
    */
-  async execute(context: any): Promise<any> {
-    // TODO: 1. Sử dụng LLM gọt giũa văn xuôi dựa theo kịch bản sườn vững chắc
-    // TODO: 2. Phủ màu phong thái văn học (Dark, Fantasy, Sci-fi...)
+  async execute(context: IStoryContext): Promise<any> {
+    const outline = context.outline;
+    const title = outline?.title || 'Untitled';
+    
+    // TODO: 1. Gọi Gemini sinh Prose theo Từng Chapter (Chỉ chương 1 lúc khởi tạo).
     return {
-      chapterId: 1,
-      prose: 'Nội dung cốt truyện dạng Markdown sinh bằng AI mượt mà...',
+      chapterTitle: outline?.chapters?.[0]?.title || 'Chapter 1',
+      content: `[Nội dung văn học được viết mượt mà cho truyện ${title}] ... Còi báo động rú vang tại Trạm 404, Kael chớp mắt ...`,
     };
   }
 }

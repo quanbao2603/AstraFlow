@@ -22,12 +22,12 @@ export class StoryService {
     // TODO: 1. Tạo Metadata Story trong bảng Database (Prisma).
     // 2. Kéo Cần gạt Pipeline AI Agent
     const result = await this.orchestrator.generateChapter(promptIdea);
-    const firstChapterContent = result.chapterText;
     
     // TODO: 3. Sinh thêm chapter1 trong DB liên kết.
     return {
       title,
-      content: firstChapterContent,
+      chapterTitle: result.chapterText?.chapterTitle || 'Chapter 1',
+      content: result.chapterText?.content || '',
     };
   }
 

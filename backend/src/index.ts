@@ -21,9 +21,12 @@ app.use(cors());
 app.use(express.json());
 
 import globalRouter from './routes/index.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 app.use('/api', globalRouter);
 
+// Global Error Handler - Must be placed AFTER routes
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
