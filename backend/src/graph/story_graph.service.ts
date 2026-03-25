@@ -1,4 +1,4 @@
-import { Neo4jService } from './neo4j.service.js';
+import { Neo4jService, neo4jService } from './neo4j.service.js';
 
 /**
  * @class StoryGraphService
@@ -8,27 +8,50 @@ import { Neo4jService } from './neo4j.service.js';
 export class StoryGraphService {
   private neo4j: Neo4jService;
 
-  constructor() {
-    this.neo4j = new Neo4jService();
+  constructor(neo4j: Neo4jService = neo4jService) {
+    this.neo4j = neo4j;
   }
 
   /**
-   * @method createCharacterNode
-   * @description Nạp Nhân vật mới lên bộ nhớ Ngoài (Knowledge Graph)
+   * @method createNode
+   * @description Tạo 1 Node bất kỳ trên đồ thị (Character, Location, Event, Item).
    */
-  async createCharacterNode(name: string, storyId: string): Promise<void> {
-    const query = `MERGE (c:Character {name: $name, storyId: $storyId})`;
-    await this.neo4j.runQuery(query, { name, storyId });
+  async createNode(label: string, properties: Record<string, any>): Promise<void> {
+    const query = `MERGE (n:${label} {name: $properties.name}) ON CREATE SET n += $properties ON MATCH SET n += $properties`;
+    await this.neo4j.runQuery(query, { properties });
   }
 
   /**
-   * @method updateCharacterStatus
-   * @description Thay đổi mối quan hệ găm chặt (Ví dụ: [Char A] -[KILLED_BY]-> [Char B])
-   * @param sourceTên gốc
-   * @param targetTên đích
-   * @param relation Tên hành động quan hệ
+   * @method createRelationship
+   * @description Tạo quan hệ giữa 2 Node dựa trên tên (hoặc identifier).
    */
-  async updateCharacterStatus(source: string, target: string, relation: string): Promise<void> {
-    // TODO: Triển khai động lực học graph-queries liên tục đảm bảo không thể mâu thuẫn sinh học câu chuyện.
+  async createRelationship(
+    sourceLabel: string, 
+    sourceName: string, 
+    targetLabel: string, 
+    targetName: string, 
+    relationType: string,
+    properties: Record<string, any> = {}
+  ): Promise<void> {
+    const query = `
+      MATCH (a:${sourceLabel} {name: $sourceName})
+      MATCH (b:${targetLabel} {name: $targetName})
+      MERGE (a)-[r:${relationType}]->(b)
+      ON CREATE SET r += $properties
+      ON MATCH SET r += $properties
+    `;
+    await this.neo4j.runQuery(query, { sourceName, targetName, properties });
+  }
+
+  /**
+   * @method getNeighborhood
+   * @description Lấy danh sách quan hệ lân cận của 1 Node (phục vụ sinh gợi ý).
+   */
+  async getNeighborhood(name: string): Promise<any> {
+    const query = `
+      MATCH (n {name: $name})-[r]-(m)
+      RETURN type(r) as relation, labels(m) as labels, m as node
+    `;
+    return await this.neo4j.runQuery(query, { name });
   }
 }
