@@ -1,5 +1,5 @@
-import Header from '../components/layouts/header/Header';
-import Footer from '../components/layouts/footer/Footer';
+import Header from './components/header/Header';
+import Footer from './components/footer/Footer';
 import { Outlet } from 'react-router-dom';
 
 export default function PublicLayout({ children }: { children?: React.ReactNode }) {

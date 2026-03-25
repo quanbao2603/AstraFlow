@@ -3,6 +3,7 @@ export const ROUTES = {
     HOME: '/',
     AUTH: '/auth',
     EXPLORE: '/explore',
+    COMMUNITY: '/community',
     STORY_DETAIL: (storyId: string) => `/story/${storyId}`,
     READ: (storyId: string, chapterId: string) => `/read/${storyId}/${chapterId}`,
   },

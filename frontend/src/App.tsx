@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import Home from './pages/home/Home';
+import ExplorePage from './pages/explore/ExplorePage';
+import CommunityPage from './pages/community/CommunityPage';
 import AuthPage from './pages/auth/AuthPage';
 import { ROUTES } from './config/routes';
 
@@ -18,6 +20,8 @@ function App() {
         {/* Public Routes with Shared Layout */}
         <Route element={<PublicLayout />}>
           <Route path={ROUTES.PUBLIC.HOME} element={<Home />} />
+          <Route path={ROUTES.PUBLIC.EXPLORE} element={<ExplorePage />} />
+          <Route path={ROUTES.PUBLIC.COMMUNITY} element={<CommunityPage />} />
         </Route>
         
         {/* Auth Route without the public layout */}
