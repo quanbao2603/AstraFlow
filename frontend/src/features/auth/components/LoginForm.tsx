@@ -1,16 +1,22 @@
-import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
+import { useAuthForm } from '../hooks/useAuthForm';
 
 interface LoginFormProps {
   onSwitchView: () => void;
 }
 
 export function LoginForm({ onSwitchView }: LoginFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
+  const {
+    formData,
+    showPassword,
+    togglePasswordVisibility,
+    handleChange
+  } = useAuthForm({ email: '', password: '', rememberMe: false });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login attempt:', formData);
   };
 
   return (
@@ -31,6 +37,9 @@ export function LoginForm({ onSwitchView }: LoginFormProps) {
           </div>
           <input
             type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Email"
             required
             className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"
@@ -43,13 +52,16 @@ export function LoginForm({ onSwitchView }: LoginFormProps) {
           </div>
           <input
             type={showPassword ? 'text' : 'password'}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Mật khẩu"
             required
             className="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"
           />
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={togglePasswordVisibility}
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -58,7 +70,13 @@ export function LoginForm({ onSwitchView }: LoginFormProps) {
 
         <div className="flex items-center justify-between pt-2">
           <label className="flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" className="rounded border-white/10 bg-white/5 text-purple-500 focus:ring-purple-500/50" />
+            <input 
+              type="checkbox" 
+              name="rememberMe"
+              checked={formData.rememberMe}
+              onChange={handleChange}
+              className="rounded border-white/10 bg-white/5 text-purple-500 focus:ring-purple-500/50" 
+            />
             <span className="text-xs text-slate-400">Ghi nhớ tôi</span>
           </label>
           <a href="#" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
@@ -85,3 +103,4 @@ export function LoginForm({ onSwitchView }: LoginFormProps) {
     </>
   );
 }
+

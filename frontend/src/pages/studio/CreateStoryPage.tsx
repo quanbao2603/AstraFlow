@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { ArrowLeft, Eraser, Sparkles, Play, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,66 +5,20 @@ import CoreSettings from '../../features/studio/components/CreateStory/CoreSetti
 import MainCharacter from '../../features/studio/components/CreateStory/MainCharacter';
 import AdvancedSettings from '../../features/studio/components/CreateStory/AdvancedSettings';
 import WorldBuilding from '../../features/studio/components/CreateStory/WorldBuilding';
+import { useCreateStoryForm } from '../../features/studio/hooks/useCreateStoryForm';
 
 export default function CreateStoryPage() {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [formData, setFormData] = useState({
-    title: '', theme: '', genre: '', setting: '', mcName: '', mcGender: 'nam', mcBio: '',
-    writingStyle: '', crueltyLevel: 'normal', aiInstructions: '', useSavedExp: true, allowNsfw: false,
-    worldEntities: [{ id: 1, type: 'faction', name: '', description: '', conflict: '' }]
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-  };
-
-  const handleAddEntity = () => {
-    setFormData(prev => ({
-      ...prev,
-      worldEntities: [...prev.worldEntities, { id: Date.now(), type: 'faction', name: '', description: '', conflict: '' }]
-    }));
-  };
-
-  const handleRemoveEntity = (id: number) => {
-    setFormData(prev => ({
-      ...prev,
-      worldEntities: prev.worldEntities.filter(entity => entity.id !== id)
-    }));
-  };
-
-  const handleEntityChange = (id: number, field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      worldEntities: prev.worldEntities.map(entity =>
-        entity.id === id ? { ...entity, [field]: value } : entity
-      )
-    }));
-  };
-
-  const handleSubmit = async () => {
-    if (!formData.title.trim() || !formData.mcName.trim()) {
-      alert("Vui lòng nhập Tên truyện và Tên nhân vật chính!");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-
-      console.log("Submitting formData:", formData);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      navigate('/studio/library');
-    } catch (error) {
-      console.error("Lỗi:", error);
-      alert("Không thể kết nối đến Server!");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    formData,
+    isSubmitting,
+    handleChange,
+    handleAddEntity,
+    handleRemoveEntity,
+    handleEntityChange,
+    handleSubmit,
+    resetFormData
+  } = useCreateStoryForm();
 
   return (
     <div className="max-w-4xl mx-auto animate-in fade-in duration-500 pb-16">
@@ -109,7 +62,7 @@ export default function CreateStoryPage() {
             </button>
             <button
               type="button"
-              onClick={() => setFormData({ ...formData, title: '', mcName: '', theme: '', mcBio: '' })}
+              onClick={resetFormData}
               className="flex items-center gap-2 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-colors font-semibold"
             >
               <Eraser size={16} /> Xóa Nháp
@@ -140,3 +93,4 @@ export default function CreateStoryPage() {
     </div>
   );
 }
+

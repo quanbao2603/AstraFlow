@@ -1,17 +1,22 @@
-import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { SocialLogin } from './SocialLogin';
+import { useAuthForm } from '../hooks/useAuthForm';
 
 interface RegisterFormProps {
   onSwitchView: () => void;
 }
 
 export function RegisterForm({ onSwitchView }: RegisterFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
+  const {
+    formData,
+    showPassword,
+    togglePasswordVisibility,
+    handleChange
+  } = useAuthForm({ email: '', password: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: implement logic
+    console.log('Register attempt:', formData);
   };
 
   return (
@@ -33,6 +38,9 @@ export function RegisterForm({ onSwitchView }: RegisterFormProps) {
           </div>
           <input
             type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Email"
             required
             className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"
@@ -45,13 +53,16 @@ export function RegisterForm({ onSwitchView }: RegisterFormProps) {
           </div>
           <input
             type={showPassword ? 'text' : 'password'}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Mật khẩu"
             required
             className="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"
           />
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={togglePasswordVisibility}
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -77,3 +88,4 @@ export function RegisterForm({ onSwitchView }: RegisterFormProps) {
     </>
   );
 }
+
