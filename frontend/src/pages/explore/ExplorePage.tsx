@@ -14,7 +14,7 @@ export default function ExplorePage() {
 
   const filteredStories = MOCK_STORIES.filter(story => {
     const matchesSearch = story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (story.author?.name.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+                          (story.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
     
     if (!matchesSearch) return false;
     if (activeTab === 'all') return true;
