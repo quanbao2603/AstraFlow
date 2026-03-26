@@ -1,44 +1,78 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
-model User {
-  id             String          @id @default(uuid())
-  email          String          @unique
-  name           String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  stories        Story[]
-  storyTemplates StoryTemplate[]
-}
-
-model StoryTemplate {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  prompt      String
-  category    String
-  isPublic    Boolean  @default(false)
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Profile {
+  id          String       @id @db.Uuid
+  email       String       @unique
+  displayName String?
+  photoURL    String?
+  role        String       @default("user")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   stories     Story[]
+  credits     UserCredits?
 }
 
 model Story {
-  id         String         @id @default(uuid())
+  id             String    @id @default(uuid()) @db.Uuid
+  authorId       String    @db.Uuid
+  author         Profile   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title          String
+  summary        String?   @db.Text
+  coverImage     String?
+  status         String    @default("draft")
+  genre          String?
+  theme          String?
+  setting        String?
+  mcName         String?
+  mcGender       String?
+  mcBio          String?   @db.Text
+  writingStyle   String?
+  crueltyLevel   String?
+  aiInstructions String?   @db.Text
+  views          Int       @default(0)
+  likes          Int       @default(0)
+  rating         Float     @default(0.0)
+  isFeatured     Boolean   @default(false)
+  chapters       Chapter[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Chapter {
+  id           String   @id @default(uuid()) @db.Uuid
+  storyId      String   @db.Uuid
+  story        Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  chapterIndex Int
+  title        String?
+  content      String   @db.Text
+  wordCount    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CraftLesson {
+  id         String   @id @default(uuid()) @db.Uuid
   title      String
-  content    String
-  authorId   String
-  author     User           @relation(fields: [authorId], references: [id])
-  templateId String?
-  template   StoryTemplate? @relation(fields: [templateId], references: [id])
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  rule       String   @db.Text
+  stage      String
+  appliesTo  Json?
+  weight     Float    @default(1.0)
+  lastSeenAt DateTime @default(now())
+}
+
+model UserCredits {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @unique @db.Uuid
+  user             Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalTokensUsed  BigInt   @default(0)
+  dailyTokensLimit Int      @default(100000)
+  lastResetDate    DateTime @default(now())
 }

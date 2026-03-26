@@ -1,143 +1,97 @@
+// src/index.ts
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from '../generated/prisma/index.js';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import dotenv from 'dotenv';
+import postgresRepo from './repositories/postgres.repo.js';
+import neo4jRepo from './repositories/neo4j.repo.js';
+import supabaseRepo from './repositories/supabase.repo.js';
 
 dotenv.config();
 
-// const connectionString = process.env.DATABASE_URL!;
-// const pool = new Pool({ 
-//   connectionString,
-//   ssl: connectionString.includes('sslmode=require') ? true : undefined
-// });
-import { join } from 'path';
-
-const adapter = new PrismaBetterSqlite3({ url: join(process.cwd(), 'dev.db') });
-const prisma = new PrismaClient({ adapter: adapter as any });
-
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
 
-// Mock User Registration (for testing)
-app.post('/api/users', async (req, res) => {
+// =======================================================
+//  MIDDLEWARE: Xác thực JWT từ Supabase
+// =======================================================
+const verifyToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, error: 'Unauthorized: No token provided' });
+  }
+  const token = authHeader.split(' ')[1];
+  const payload = supabaseRepo.verifyToken(token);
+  if (!payload) {
+    return res.status(401).json({ success: false, error: 'Unauthorized: Invalid token' });
+  }
+  req.user = payload;
+  next();
+};
+
+// =======================================================
+//  STARTUP: Khởi tạo Schema Neo4j
+// =======================================================
+neo4jRepo.initializeSchema().catch((err) =>
+  console.error('[Neo4j] Schema init failed:', err.message)
+);
+
+// =======================================================
+//  ROUTES
+// =======================================================
+
+// Health Check - Kiểm tra cả 3 kết nối
+app.get('/', async (_req, res) => {
+  const [postgres, neo4j, supabase] = await Promise.allSettled([
+    postgresRepo.ping(),
+    neo4jRepo.ping(),
+    supabaseRepo.ping(),
+  ]);
+
+  res.json({
+    success: true,
+    message: 'AstraFlow API v1 - Kiến Trúc Tam Quốc',
+    databases: {
+      postgres: postgres.status === 'fulfilled' && postgres.value ? 'CONNECTED' : 'ERROR',
+      neo4j: neo4j.status === 'fulfilled' && neo4j.value ? 'CONNECTED' : 'ERROR',
+      supabase: supabase.status === 'fulfilled' && supabase.value ? 'CONNECTED' : 'ERROR',
+    },
+  });
+});
+
+// Lấy danh sách Stories của user đang đăng nhập
+app.get('/api/v1/stories', verifyToken, async (req: any, res) => {
   try {
-    const { email, name } = req.body;
-    
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        name
-      }
-    });
-    
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error('Error creating user:', error);
-    console.dir(error, { depth: null });
-    res.status(500).json({ error: 'Failed to create user' });
+    const stories = await postgresRepo.findStoriesByAuthor(req.user.sub);
+    res.json({ success: true, data: stories });
+  } catch (error: any) {
+    console.error('[GET /api/v1/stories]', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
 
-// Get all public templates
-app.get('/api/story-templates', async (req, res) => {
-  try {
-    const templates = await prisma.storyTemplate.findMany({
-      where: { isPublic: { equals: true } },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(templates);
-  } catch (error) {
-    console.error('Error fetching story templates:', error);
-    res.status(500).json({ error: 'Failed to fetch story templates' });
-  }
+// Lấy thông tin user đang đăng nhập
+app.get('/api/v1/auth/me', verifyToken, (req: any, res) => {
+  res.json({ success: true, data: req.user });
 });
 
-// Create a new template
-app.post('/api/story-templates', async (req, res) => {
-  try {
-    const { title, description, prompt, category, isPublic, userId } = req.body;
-    
-    // In a real app, userId should come from auth token, but for now we'll allow passing it
-    const newTemplate = await prisma.storyTemplate.create({
-      data: {
-        title,
-        description,
-        prompt,
-        category,
-        isPublic: isPublic ?? false,
-        userId
-      }
-    });
-    
-    res.status(201).json(newTemplate);
-  } catch (error) {
-    console.error('Error creating story template:', error);
-    res.status(500).json({ error: 'Failed to create story template' });
-  }
-});
-
-// Create a new story
-app.post('/api/stories', async (req, res) => {
-  try {
-    const { title, content, templateId, userId } = req.body;
-    
-    const newStory = await prisma.story.create({
-      data: {
-        title,
-        content,
-        templateId,
-        authorId: userId
-      }
-    });
-    
-    res.status(201).json(newStory);
-  } catch (error) {
-    console.error('Error creating story:', error);
-    res.status(500).json({ error: 'Failed to create story' });
-  }
-});
-
-// Get story by ID
-app.get('/api/stories/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const story = await prisma.story.findUnique({
-      where: { id },
-      include: { template: true }
-    });
-    
-    if (!story) {
-      return res.status(404).json({ error: 'Story not found' });
-    }
-    
-    res.json(story);
-  } catch (error) {
-    console.error('Error fetching story:', error);
-    res.status(500).json({ error: 'Failed to fetch story' });
-  }
-});
-
-// Get user's stories
-app.get('/api/stories/user/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const stories = await prisma.story.findMany({
-      where: { authorId: userId },
-      orderBy: { createdAt: 'desc' },
-      include: { template: true }
-    });
-    
-    res.json(stories);
-  } catch (error) {
-    console.error('Error fetching user stories:', error);
-    res.status(500).json({ error: 'Failed to fetch user stories' });
-  }
-});
-
+// =======================================================
+//  STARTUP LISTENER
+// =======================================================
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`✅ Server is running at http://localhost:${port}`);
+  console.log(`   - PostgreSQL (Prisma+PrismaPg): READY`);
+  console.log(`   - Neo4j AuraDB:                 INITIALIZING`);
+  console.log(`   - Supabase Auth:                READY`);
+});
+
+// =======================================================
+//  GRACEFUL SHUTDOWN
+// =======================================================
+process.on('SIGTERM', async () => {
+  console.log('[Server] Shutting down gracefully...');
+  await neo4jRepo.close();
+  process.exit(0);
 });
