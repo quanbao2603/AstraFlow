@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Key, Eye, EyeOff, Plus } from 'lucide-react';
+import { Key, Eye, EyeOff, Plus, Loader2 } from 'lucide-react';
+import { useApiKeyForm } from '../../hooks/useApiKeyForm';
 
 export default function ApiKeyForm() {
-  const [showKey, setShowKey] = useState(false);
+  const { showKey, isSubmitting, toggleKeyVisibility, handleSubmit } = useApiKeyForm();
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
@@ -10,7 +10,7 @@ export default function ApiKeyForm() {
         <Key className="w-5 h-5 text-indigo-400" />
         Thêm API Key mới
       </h3>
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">Nhà cung cấp (Provider)</label>
@@ -41,7 +41,7 @@ export default function ApiKeyForm() {
             />
             <button 
               type="button"
-              onClick={() => setShowKey(!showKey)}
+              onClick={toggleKeyVisibility}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
             >
               {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -52,13 +52,15 @@ export default function ApiKeyForm() {
         <div className="pt-2">
           <button 
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            disabled={isSubmitting}
+            className={`bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <Plus className="w-4 h-4" />
-            Thêm khóa
+            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            {isSubmitting ? 'Đang thêm...' : 'Thêm khóa'}
           </button>
         </div>
       </form>
     </div>
   );
 }
+

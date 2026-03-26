@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {
+      "id": "14261b70-2eec-41ae-a821-c1d991147519",
+      "name": "Frontend SOLID Audit",
+      "description": "Conduct a comprehensive review of the frontend directory to ensure compliance with SOLID principles and identify files with excessive responsibilities.",
+      "createdAt": "2026-03-26T18:15:02.058Z",
+      "updatedAt": "2026-03-26T18:15:02.058Z"
+    }
+  ],
+  "tasks": [],
+  "subtasks": [],
+  "migration": {
+    "version": "1.8.1"
+  }
+}

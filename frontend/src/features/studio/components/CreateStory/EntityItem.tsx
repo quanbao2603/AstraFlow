@@ -1,5 +1,5 @@
 import { Trash2, Sparkles } from 'lucide-react';
-import type { WorldEntity } from '../../hooks/useCreateStoryForm';
+import type { WorldEntity } from '../../types/studio';
 
 interface EntityItemProps {
   entity: WorldEntity;

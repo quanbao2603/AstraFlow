@@ -1,5 +1,5 @@
 import { Globe, Plus } from 'lucide-react';
-import type { WorldEntity } from '../../hooks/useCreateStoryForm';
+import type { WorldEntity } from '../../types/studio';
 import EntityItem from './EntityItem';
 
 interface WorldBuildingProps {

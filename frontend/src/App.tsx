@@ -4,6 +4,7 @@ import Home from './pages/home/Home';
 import ExplorePage from './pages/explore/ExplorePage';
 import CommunityPage from './pages/community/CommunityPage';
 import AuthPage from './pages/auth/AuthPage';
+import ReaderPage from './pages/reader/ReaderPage';
 import { ROUTES } from './config/routes';
 
 // Studio Pages
@@ -26,6 +27,7 @@ function App() {
         
         {/* Auth Route without the public layout */}
         <Route path={ROUTES.PUBLIC.AUTH} element={<AuthPage />} />
+        <Route path="/read/:storyId" element={<ReaderPage />} />
 
         {/* Studio Routes */}
         <Route path={ROUTES.STUDIO.ROOT} element={<StudioLayout />}>
