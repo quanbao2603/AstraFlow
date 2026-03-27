@@ -4,14 +4,24 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 // DB & Clients
-import profileRepo from './repositories/profile.repo.js';
+import { ProfileRepository } from './repositories/profile.repo.js';
+import { StoryRepository } from './repositories/story.repo.js';
 import neo4jRepo from './repositories/neo4j.repo.js';
 import supabaseRepo from './repositories/supabase.repo.js';
 import { closeNeo4jDriver } from './db/neo4j.js';
 
+// Services
+import { AuthService } from './services/auth.service.js';
+import { StoryService } from './services/story.service.js';
+
+// Controllers
+import { AuthController } from './controllers/auth.controller.js';
+import { StoryController } from './controllers/story.controller.js';
+
 // Routes
-import storyRoutes from './routes/v1/story.routes.js';
-import authRoutes from './routes/v1/auth.routes.js';
+import { createStoryRouter } from './routes/v1/story.routes.js';
+import { createAuthRouter } from './routes/v1/auth.routes.js';
+import apiKeyRoutes from './routes/apiKey.routes.js';
 
 dotenv.config();
 
@@ -29,13 +39,28 @@ neo4jRepo.initializeSchema().catch((err: any) =>
 );
 
 // =======================================================
+//  DI ROOT: Khởi tạo Dependencies
+// =======================================================
+const profileRepoInstance = new ProfileRepository();
+const storyRepoInstance = new StoryRepository();
+
+const authService = new AuthService(profileRepoInstance);
+const storyService = new StoryService(storyRepoInstance);
+
+const authController = new AuthController(authService);
+const storyController = new StoryController(storyService);
+
+const authRoutes = createAuthRouter(authController);
+const storyRoutes = createStoryRouter(storyController);
+
+// =======================================================
 //  ROUTES
 // =======================================================
 
 // Health Check - Kiểm tra cả 3 kết nối
 app.get('/', async (_req, res) => {
   const [postgres, neo4j, supabase] = await Promise.allSettled([
-    profileRepo.ping(),
+    profileRepoInstance.ping(),
     neo4jRepo.ping(),
     supabaseRepo.ping(),
   ]);
@@ -54,6 +79,7 @@ app.get('/', async (_req, res) => {
 // API Routes V1
 app.use('/api/v1/stories', storyRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/keys', apiKeyRoutes);
 
 // =======================================================
 //  STARTUP LISTENER

@@ -11,15 +11,21 @@ export const supabaseRepo = {
   /**
    * Xác thực JWT Token từ Supabase, trả về payload user nếu hợp lệ
    */
-  verifyToken(token: string): { sub: string; email: string; role: string } | null {
+  async verifyToken(token: string): Promise<{ id: string; sub: string; email: string; role: string } | null> {
     try {
-      const decoded = jwt.verify(token, supabaseJwtSecret) as any;
+      const { data, error } = await supabase.auth.getUser(token);
+      if (error || !data.user) {
+        console.error('Supabase getUser error:', error?.message);
+        return null;
+      }
       return {
-        sub: decoded.sub,
-        email: decoded.email,
-        role: decoded.role ?? 'user',
+        id: data.user.id,
+        sub: data.user.id,
+        email: data.user.email || '',
+        role: data.user.role ?? 'user',
       };
-    } catch {
+    } catch (error: any) {
+      console.error('Supabase auth error:', error.message);
       return null;
     }
   },

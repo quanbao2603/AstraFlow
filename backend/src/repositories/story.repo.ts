@@ -1,7 +1,8 @@
 // src/repositories/story.repo.ts
 import prisma from '../db/prisma.js';
+import type { IStoryRepository } from '../interfaces/IStoryRepository.js';
 
-export const storyRepo = {
+export class StoryRepository implements IStoryRepository {
   // --- STORY ---
   async findByAuthor(authorId: string) {
     return prisma.story.findMany({
@@ -9,14 +10,14 @@ export const storyRepo = {
       orderBy: { createdAt: 'desc' },
       include: { chapters: { orderBy: { chapterIndex: 'asc' } } },
     });
-  },
+  }
 
   async findById(id: string) {
     return prisma.story.findUnique({
       where: { id },
       include: { author: true, chapters: { orderBy: { chapterIndex: 'asc' } } },
     });
-  },
+  }
 
   async create(data: {
     authorId: string;
@@ -32,7 +33,9 @@ export const storyRepo = {
   }) {
     // Handle optional fields with null/undefined correctly for Prisma 7+ strict types if needed
     return prisma.story.create({ data });
-  },
-};
+  }
+}
 
+// Keep export default for backward compatibility
+const storyRepo = new StoryRepository();
 export default storyRepo;

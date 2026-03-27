@@ -1,22 +1,16 @@
 // src/routes/v1/story.routes.ts
 import { Router } from 'express';
-import storyRepo from '../../repositories/story.repo.js';
 import { verifyToken } from '../../middlewares/auth.middleware.js';
+import type { StoryController } from '../../controllers/story.controller.js';
 
-const router = Router();
+export function createStoryRouter(storyController: StoryController): Router {
+  const router = Router();
 
-/**
- * [GET] /api/v1/stories
- * Lấy danh sách Stories của user đang đăng nhập
- */
-router.get('/', verifyToken, async (req: any, res) => {
-  try {
-    const stories = await storyRepo.findByAuthor(req.user.sub);
-    res.json({ success: true, data: stories });
-  } catch (error: any) {
-    console.error('[GET /api/v1/stories]', error);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-});
+  /**
+   * [GET] /api/v1/stories
+   * Lấy danh sách Stories của user đang đăng nhập
+   */
+  router.get('/', verifyToken, storyController.getStories);
 
-export default router;
+  return router;
+}

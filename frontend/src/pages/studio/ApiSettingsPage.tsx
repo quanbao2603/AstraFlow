@@ -1,7 +1,28 @@
+import { useState, useCallback, useEffect } from 'react';
 import ApiKeyForm from '../../features/studio/components/ApiSettings/ApiKeyForm';
 import ApiKeyList from '../../features/studio/components/ApiSettings/ApiKeyList';
+import { ApiKeyService, type ApiKey } from '../../services/apiKey.service';
 
 export default function ApiSettingsPage() {
+  const [keys, setKeys] = useState<ApiKey[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadKeys = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await ApiKeyService.getKeys();
+      setKeys(data);
+    } catch (error) {
+      console.error("Failed to load keys", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadKeys();
+  }, [loadKeys]);
+
   return (
     <div className="max-w-4xl animate-in fade-in duration-500">
       <div className="mb-8">
@@ -12,11 +33,12 @@ export default function ApiSettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-8">
-        <ApiKeyForm />
-        <ApiKeyList />
+        {/* Pass loadKeys as callback on successful insert */}
+        <ApiKeyForm onSuccess={loadKeys} />
+        
+        {/* Pass state arrays to the list component */}
+        <ApiKeyList keys={keys} loading={loading} onReload={loadKeys} />
       </div>
     </div>
   );
 }
-
-
