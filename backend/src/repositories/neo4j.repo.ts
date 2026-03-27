@@ -1,36 +1,13 @@
 // src/repositories/neo4j.repo.ts
-// Repository cho Neo4j AuraDB (Lưu trữ Lore / Đồ thị tri thức)
-import neo4j from 'neo4j-driver';
-import type { Driver, Session, QueryResult } from 'neo4j-driver';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const NEO4J_URI = process.env.NEO4J_URI!;
-const NEO4J_USERNAME = process.env.NEO4J_USERNAME!;
-const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD!;
-
-let driver: Driver | null = null;
-
-function getDriver(): Driver {
-  if (!driver) {
-    if (!NEO4J_URI || !NEO4J_USERNAME || !NEO4J_PASSWORD) {
-      throw new Error('[neo4j.repo.ts] Neo4j env vars are not defined in .env');
-    }
-    driver = neo4j.driver(
-      NEO4J_URI,
-      neo4j.auth.basic(NEO4J_USERNAME, NEO4J_PASSWORD)
-    );
-  }
-  return driver;
-}
+import { getNeo4jDriver } from '../db/neo4j.js';
+import type { Session, QueryResult } from 'neo4j-driver';
 
 export const neo4jRepo = {
   /**
    * Chạy một Cypher Query bất kỳ
    */
   async runCypher(cypher: string, params: Record<string, any> = {}): Promise<QueryResult> {
-    const session: Session = getDriver().session();
+    const session: Session = getNeo4jDriver().session();
     try {
       return await session.run(cypher, params);
     } finally {
@@ -48,7 +25,7 @@ export const neo4jRepo = {
       `CREATE CONSTRAINT event_id IF NOT EXISTS FOR (e:Event) REQUIRE e.id IS UNIQUE`,
     ];
     for (const query of constraints) {
-      await neo4jRepo.runCypher(query);
+      await this.runCypher(query);
     }
     console.log('[Neo4j] Schema constraints initialized.');
   },
@@ -58,7 +35,7 @@ export const neo4jRepo = {
    */
   async ping(): Promise<boolean> {
     try {
-      await neo4jRepo.runCypher('RETURN 1');
+      await this.runCypher('RETURN 1');
       return true;
     } catch {
       return false;
@@ -69,11 +46,8 @@ export const neo4jRepo = {
    * Đóng kết nối (dùng khi graceful shutdown)
    */
   async close(): Promise<void> {
-    if (driver) {
-      await driver.close();
-      driver = null;
-      console.log('[Neo4j] Connection closed.');
-    }
+    // Logic close thực tế nằm trong db/neo4j.ts, repo này chỉ bọc lại nếu cần
+    // Nhưng index.ts sẽ gọi trực tiếp closeNeo4jDriver để đảm bảo singleton được giải phóng
   },
 };
 

@@ -1,22 +1,54 @@
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { SocialLogin } from './SocialLogin';
 import { useAuthForm } from '../hooks/useAuthForm';
+import { useAuth } from '../hooks/useAuth';
+import { ROUTES } from '../../../config/routes';
 
 interface LoginFormProps {
   onSwitchView: () => void;
 }
 
 export function LoginForm({ onSwitchView }: LoginFormProps) {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const {
     formData,
     showPassword,
     togglePasswordVisibility,
-    handleChange
+    handleChange,
+    isSubmitting,
+    setSubmitting
   } = useAuthForm({ email: '', password: '', rememberMe: false });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Get the location they were trying to go to, or default to studio
+  const from = location.state?.from?.pathname || ROUTES.STUDIO.ROOT;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt:', formData);
+    setSubmitting(true);
+    
+    try {
+      // Giả lập gọi API login
+      console.log('Login attempt:', formData);
+      await new Promise(resolve => setTimeout(resolve, 800)); // Delay giả lập
+      
+      // Giả lập dữ liệu user thành công
+      const mockUser = {
+        id: 'u-1',
+        email: formData.email,
+        name: formData.email.split('@')[0],
+      };
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      
+      login(mockToken, mockUser);
+      navigate(from, { replace: true });
+    } catch (error) {
+      console.error('Login failed:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -86,9 +118,17 @@ export function LoginForm({ onSwitchView }: LoginFormProps) {
 
         <button
           type="submit"
-          className="w-full py-3 mt-6 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/25 transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+          disabled={isSubmitting}
+          className="w-full py-3 mt-6 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/25 transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          Đăng nhập
+          {isSubmitting ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Đang đăng nhập...
+            </>
+          ) : (
+            'Đăng nhập'
+          )}
         </button>
       </form>
 

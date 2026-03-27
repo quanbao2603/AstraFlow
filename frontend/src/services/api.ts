@@ -1,32 +1,52 @@
-// src/services/api.ts
+import supabase from '../config/supabase';
 import type { Story, StoryFormData } from '../types/story';
 
-// const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
 
 /**
  * AstraFlow API Client
- * This is a bridge for backend integration. Currently uses localStorage as a fallback.
+ * Kết nối với Backend API. Có fallback sang localStorage nếu cần.
  */
 export const ApiService = {
+  // Helper to get headers with token
+  getHeaders: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return {
+      'Content-Type': 'application/json',
+      ...(session ? { 'Authorization': `Bearer ${session.access_token}` } : {})
+    };
+  },
+
   // STORIES
   getStories: async (): Promise<Story[]> => {
     try {
-      // Phase 1: Local Storage
+      const headers = await ApiService.getHeaders();
+      const response = await fetch(`${API_BASE_URL}/stories`, { headers });
+      
+      if (response.ok) {
+        const result = await response.json();
+        return result.data || [];
+      }
+
+      // Fallback to localStorage if API fails or Unauthorized
       const local = localStorage.getItem('astra_flow_stories');
       return local ? JSON.parse(local) : [];
     } catch (error) {
-      console.error("Error reading from storage:", error);
-      return [];
+      console.error("Error fetching stories from API:", error);
+      const local = localStorage.getItem('astra_flow_stories');
+      return local ? JSON.parse(local) : [];
     }
   },
 
   getStoryById: async (id: string): Promise<Story | null> => {
+    // Tạm thời vẫn lấy từ list chung hoặc backend tùy nhu cầu
     const stories = await ApiService.getStories();
     return stories.find((s: Story) => s.id === id) || null;
   },
 
   createStory: async (data: StoryFormData): Promise<Story> => {
-    // Simulate Backend logic
+    // TODO: Chuyển sang POST /api/v1/stories khi backend sẵn sàng
+    // Hiện tại vẫn dùng localStorage để đảm bảo không lỗi luồng cũ
     const newStory: Story = {
       ...data,
       id: `s-${Date.now()}`,
@@ -39,10 +59,6 @@ export const ApiService = {
       likes: 0,
       rating: 0,
       isFeatured: false,
-      author: {
-        id: 'u-1',
-        name: 'Bạn'
-      }
     };
 
     const stories = await ApiService.getStories();

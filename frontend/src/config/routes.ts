@@ -2,6 +2,7 @@ export const ROUTES = {
   PUBLIC: {
     HOME: '/',
     AUTH: '/auth',
+    AUTH_CALLBACK: '/auth/callback',
     EXPLORE: '/explore',
     COMMUNITY: '/community',
     STORY_DETAIL: (storyId: string) => `/story/${storyId}`,
