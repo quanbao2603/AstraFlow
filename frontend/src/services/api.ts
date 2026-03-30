@@ -45,25 +45,24 @@ export const ApiService = {
   },
 
   createStory: async (data: StoryFormData): Promise<Story> => {
-    // TODO: Chuyển sang POST /api/v1/stories khi backend sẵn sàng
-    // Hiện tại vẫn dùng localStorage để đảm bảo không lỗi luồng cũ
-    const newStory: Story = {
-      ...data,
-      id: `s-${Date.now()}`,
-      description: data.title + " - Một câu chuyện thú vị.",
-      chapters: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      coverUrl: `https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80`,
-      views: 0,
-      likes: 0,
-      rating: 0,
-      isFeatured: false,
-    };
-
-    const stories = await ApiService.getStories();
-    localStorage.setItem('astra_flow_stories', JSON.stringify([...stories, newStory]));
-    return newStory;
+    try {
+      const headers = await ApiService.getHeaders();
+      const response = await fetch(`${API_BASE_URL}/stories/generate`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || `Lỗi từ Server (${response.status})`);
+      }
+      
+      return result.data;
+    } catch (error: any) {
+      console.error("Error creating story AI generate API:", error);
+      throw error;
+    }
   },
 
   deleteStory: async (id: string): Promise<void> => {

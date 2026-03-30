@@ -16,6 +16,11 @@ import { AuthService } from './modules/auth/auth.service.js';
 import { StoryService } from './modules/story/story.service.js';
 import { ApiKeyService } from './modules/apiKey/apiKey.service.js';
 
+import { GeminiProvider } from './infrastructure/ai/gemini.provider.js';
+import { OpenAiCompatibleProvider } from './infrastructure/ai/openai.provider.js';
+import { TavilyProvider } from './infrastructure/search/tavily.provider.js';
+import { GenerateStoryUseCase } from './modules/story/useCases/generateStory.useCase.js';
+
 import { AuthController } from './modules/auth/auth.controller.js';
 import { StoryController } from './modules/story/story.controller.js';
 import { ApiKeyController } from './modules/apiKey/apiKey.controller.js';
@@ -46,14 +51,31 @@ export function composeApp(): ComposedApp {
   const chapterRepo = new ChapterRepository();
   const apiKeyRepo = new ApiKeyRepository();
 
-  // ── Services ────────────────────────────────────────────────────────────────
+  // ── Infrastructure ────────────────────────────────────────────────────────────
+  const geminiProvider = new GeminiProvider();
+  const nineRouterProvider = new OpenAiCompatibleProvider('http://localhost:20128/v1');
+  const searchProvider = new TavilyProvider();
+
+  const llmProviders = {
+    'gemini': geminiProvider,
+    '9router': nineRouterProvider,
+    'openai': nineRouterProvider
+  };
+
+  // ── Services & UseCases ─────────────────────────────────────────────────────
   const authService = new AuthService(profileRepo);
   const storyService = new StoryService(storyRepo);
   const apiKeyService = new ApiKeyService(apiKeyRepo);
 
+  const generateStoryUseCase = new GenerateStoryUseCase(
+    apiKeyService,
+    llmProviders,
+    searchProvider
+  );
+
   // ── Controllers ─────────────────────────────────────────────────────────────
   const authController = new AuthController(authService);
-  const storyController = new StoryController(storyService);
+  const storyController = new StoryController(storyService, generateStoryUseCase);
   const apiKeyController = new ApiKeyController(apiKeyService);
 
   // ── Routers ─────────────────────────────────────────────────────────────────

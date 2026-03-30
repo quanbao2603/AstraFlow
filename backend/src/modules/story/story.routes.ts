@@ -16,6 +16,12 @@ export function createStoryRouter(storyController: StoryController): Router {
    */
   router.get('/', verifyToken, syncProfile, storyController.getStories);
 
+  /**
+   * [POST] /api/v1/stories/generate
+   * Gửi ý tưởng để AI sinh core Blueprint và lưu thành Story
+   */
+  router.post('/generate', verifyToken, syncProfile, storyController.generateStory);
+
   return router;
 }
 

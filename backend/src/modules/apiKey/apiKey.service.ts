@@ -12,7 +12,7 @@ import type {
   ApiKeyListItem,
   ApiKeyCreatedResult,
 } from './interfaces/IApiKeyService.js';
-import { encryptKey } from '../../core/utils/encryption.util.js';
+import { encryptKey, decryptKey } from '../../core/utils/encryption.util.js';
 import { maskKey } from '../../core/utils/masking.util.js';
 import { validateApiKeyLive } from '../../core/utils/apiKeyValidator.util.js';
 
@@ -114,6 +114,41 @@ export class ApiKeyService implements IApiKeyService {
     }
 
     return true;
+  }
+
+  /**
+   * Lấy API Key đang active (mặc định) của user dưới dạng raw plaintext.
+   * Dùng riêng cho internal service (VD: AI Service gọi LLM).
+   * Nếu không truyền provider, sẽ lấy key default của bât kỳ provider nào.
+   */
+  async getDefaultKeyPlaintext(userId: string, provider?: string): Promise<{ key: string, provider: string } | null> {
+    if (provider) {
+      const defaultKey = await this.apiKeyRepo.findDefaultByProvider(userId, provider);
+      if (!defaultKey) return null;
+      try {
+        return {
+          key: decryptKey({ encryptedKey: defaultKey.encryptedKey, iv: defaultKey.iv }),
+          provider: defaultKey.provider
+        };
+      } catch (e: any) {
+        console.warn(`[ApiKeyService] Lỗi giải mã API key (có thể key bị rác do mất ENCRYPTION_KEY cũ). ID: ${defaultKey.id}`);
+        return null;
+      }
+    } else {
+      // Find the first default key
+      const keys = await this.apiKeyRepo.findByUserId(userId);
+      const defaultKey = keys.find(k => k.isDefault);
+      if (!defaultKey) return null;
+      try {
+        return {
+          key: decryptKey({ encryptedKey: defaultKey.encryptedKey, iv: defaultKey.iv }),
+          provider: defaultKey.provider
+        };
+      } catch (e: any) {
+        console.warn(`[ApiKeyService] Lỗi giải mã API key mặc định (ID: ${defaultKey.id}).`);
+        return null;
+      }
+    }
   }
 }
 

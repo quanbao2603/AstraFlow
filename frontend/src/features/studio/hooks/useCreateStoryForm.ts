@@ -61,12 +61,10 @@ export const useCreateStoryForm = () => {
       const fullData: StoryFormData = { ...baseFormData, worldEntities: entities };
       await ApiService.createStory(fullData);
       
-      // Giả lập AI xử lý
-      await new Promise(resolve => setTimeout(resolve, 800));
       navigate('/studio/library');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Lỗi khi tạo truyện:", error);
-      alert("Không thể kết nối đến Server!");
+      alert(error.message || "Không thể kết nối đến Server/AI!");
     } finally {
       setIsSubmitting(false);
     }

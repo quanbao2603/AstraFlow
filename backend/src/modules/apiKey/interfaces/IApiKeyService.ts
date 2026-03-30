@@ -32,4 +32,5 @@ export interface IApiKeyService {
     isDefault?: boolean
   ): Promise<ApiKeyCreatedResult>;
   removeKey(id: string, userId: string): Promise<boolean>;
+  getDefaultKeyPlaintext(userId: string, provider?: string): Promise<{ key: string, provider: string } | null>;
 }
