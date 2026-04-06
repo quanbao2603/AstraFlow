@@ -16,7 +16,7 @@ const ReadingView: React.FC<ReadingViewProps> = ({ content, fontSize, theme }) =
   return (
     <div className={`min-h-[70vh] rounded-3xl p-8 md:p-12 shadow-2xl transition-colors duration-500 ${themes[theme]}`}>
       <div 
-        className="max-w-2xl mx-auto leading-relaxed whitespace-pre-wrap font-serif selection:bg-violet-500/30"
+        className="max-w-2xl mx-auto leading-loose whitespace-pre-wrap font-sans text-justify selection:bg-violet-500/30"
         style={{ fontSize: `${fontSize}px` }}
       >
         {content || (

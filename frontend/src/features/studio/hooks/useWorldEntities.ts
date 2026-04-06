@@ -22,8 +22,8 @@ export const useWorldEntities = (initialEntities: WorldEntity[]) => {
     ));
   };
 
-  const resetEntities = () => {
-    setEntities(initialEntities);
+  const resetEntities = (newEntities?: WorldEntity[]) => {
+    setEntities(newEntities ?? initialEntities);
   };
 
   return {

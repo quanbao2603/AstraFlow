@@ -29,9 +29,33 @@ export class StoryRepository implements IStoryRepository {
     mcGender?: string;
     writingStyle?: string;
     crueltyLevel?: string;
+    blueprintJson?: any;
+    firstChapterContent?: string;
   }) {
-    // Handle optional fields with null/undefined correctly for Prisma 7+ strict types if needed
-    return prisma.story.create({ data });
+    const { firstChapterContent, ...storyData } = data;
+    const createInput: any = { ...storyData };
+    
+    // Nếu có nội dung chương 1 được sinh ra, tự động tạo records Chapter 1 lồng vào Story
+    if (firstChapterContent) {
+      createInput.chapters = {
+        create: [{
+          title: "Chương 1",
+          content: firstChapterContent,
+          chapterIndex: 1
+        }]
+      };
+    }
+    
+    return prisma.story.create({ data: createInput });
+  }
+
+  async delete(id: string): Promise<boolean> {
+    try {
+      await prisma.story.delete({ where: { id } });
+      return true;
+    } catch (e) {
+      return false; // Not found or error
+    }
   }
 }
 

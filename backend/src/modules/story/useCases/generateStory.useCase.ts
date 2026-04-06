@@ -74,10 +74,32 @@ export class GenerateStoryUseCase {
     }
 
     // Gôm toàn bộ Blueprint trả về controller kết thúc orchestration.
-    return {
+    const blueprintPayload = {
+      inputTitle: inputData.title || '',         // Giữ lại title gốc từ user để service dùng
+      inputMcName: inputData.mcName || '',       // Giữ lại tên MC gốc
       original_ideas: structuredInput,
       expanded_universe: finalStory,
       is_augmented_by_web: !!webContext
+    };
+
+    // GIAI ĐOẠN 5: Viết Chương 1
+    console.log('[GenerateStoryUseCase] Bắt đầu sinh nội dung Chương 1...');
+    const chapSysPrompt = PromptBuilder.buildChapterGenerationSystemPrompt();
+    const chapUsrPrompt = PromptBuilder.buildChapterGenerationUserPrompt(blueprintPayload);
+    
+    let firstChapterContent = '';
+    try {
+      // jsonMode: false => trả text thuần tuý
+      firstChapterContent = await llmProvider.generateText(chapSysPrompt, chapUsrPrompt, apiKey, false);
+    } catch (e: any) {
+      // Nếu lỗi sinh chương, ta vẫn trả về blueprint nhưng log lỗi, 
+      // để service vẫn tạo đc truyện (hoặc ném lỗi luôn tuỳ yêu cầu)
+      console.error(`Lỗi Giai đoạn 5 (Sinh Chương 1): ${e.message}`);
+    }
+
+    return {
+      ...blueprintPayload,
+      firstChapterContent // Gắn thêm text để Service hứng và lưu DB
     };
   }
 }

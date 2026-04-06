@@ -17,9 +17,11 @@ import { StoryService } from './modules/story/story.service.js';
 import { ApiKeyService } from './modules/apiKey/apiKey.service.js';
 
 import { GeminiProvider } from './infrastructure/ai/gemini.provider.js';
-import { OpenAiCompatibleProvider } from './infrastructure/ai/openai.provider.js';
+import { OpenAiProvider, OpenAiCompatibleProvider } from './infrastructure/ai/openai.provider.js';
+import { OpenRouterProvider } from './infrastructure/ai/openrouter.provider.js';
 import { TavilyProvider } from './infrastructure/search/tavily.provider.js';
 import { GenerateStoryUseCase } from './modules/story/useCases/generateStory.useCase.js';
+import { GenerateNextChapterUseCase } from './modules/story/useCases/generateNextChapter.useCase.js';
 
 import { AuthController } from './modules/auth/auth.controller.js';
 import { StoryController } from './modules/story/story.controller.js';
@@ -52,19 +54,24 @@ export function composeApp(): ComposedApp {
   const apiKeyRepo = new ApiKeyRepository();
 
   // ── Infrastructure ────────────────────────────────────────────────────────────
-  const geminiProvider = new GeminiProvider();
-  const nineRouterProvider = new OpenAiCompatibleProvider('http://localhost:20128/v1');
+  const geminiProvider    = new GeminiProvider();
+  const openaiProvider    = new OpenAiProvider();
+  const openrouterProvider = new OpenRouterProvider();
+  const nineRouterProvider = new OpenAiCompatibleProvider(
+    process.env.NINE_ROUTER_URL || 'http://localhost:20128/v1'
+  );
   const searchProvider = new TavilyProvider();
 
-  const llmProviders = {
-    'gemini': geminiProvider,
-    '9router': nineRouterProvider,
-    'openai': nineRouterProvider
+  const llmProviders: Record<string, any> = {
+    'gemini':      geminiProvider,      // Google Gemini (generativelanguage.googleapis.com)
+    'openai':      openaiProvider,      // OpenAI chính thức (api.openai.com)
+    'openrouter':  openrouterProvider,  // OpenRouter gateway (openrouter.ai)
+    '9router':     nineRouterProvider,  // 9Router / Local LLM (OpenAI-compatible)
   };
 
   // ── Services & UseCases ─────────────────────────────────────────────────────
   const authService = new AuthService(profileRepo);
-  const storyService = new StoryService(storyRepo);
+  const storyService = new StoryService(storyRepo, chapterRepo);
   const apiKeyService = new ApiKeyService(apiKeyRepo);
 
   const generateStoryUseCase = new GenerateStoryUseCase(
@@ -73,9 +80,14 @@ export function composeApp(): ComposedApp {
     searchProvider
   );
 
+  const generateNextChapterUseCase = new GenerateNextChapterUseCase(
+    apiKeyService,
+    llmProviders
+  );
+
   // ── Controllers ─────────────────────────────────────────────────────────────
   const authController = new AuthController(authService);
-  const storyController = new StoryController(storyService, generateStoryUseCase);
+  const storyController = new StoryController(storyService, generateStoryUseCase, generateNextChapterUseCase);
   const apiKeyController = new ApiKeyController(apiKeyService);
 
   // ── Routers ─────────────────────────────────────────────────────────────────

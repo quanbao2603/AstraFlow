@@ -1,0 +1,46 @@
+# ╔══════════════════════════════════════════════╗
+# ║     ASTRAFLOW STORY TEMPLATE v1.0            ║
+# ║  Dòng bắt đầu bằng # sẽ bị bỏ qua (comment) ║
+# ╚══════════════════════════════════════════════╝
+
+# ─────────────────────────────────────────────────
+# [CORE] — Thông tin cốt lõi của truyện
+# ─────────────────────────────────────────────────
+[CORE]
+title: Kẻ Trở Về Từ Địa Ngục
+theme: Một cựu binh mất ký ức hồi hương, dần khám phá sự thật tàn khốc về quá khứ của mình
+genre: Hành động, Tâm lý, Bí ẩn
+setting: Thành phố ven biển u ám, hậu chiến tranh, thời hiện đại
+
+# ─────────────────────────────────────────────────
+# [CHARACTER] — Nhân vật chính
+# gender: nam | nu | khac
+# ─────────────────────────────────────────────────
+[CHARACTER]
+name: Trần Minh Vũ
+gender: nam
+bio: Cựu lính đặc nhiệm 30 tuổi, sống sót sau một vụ nổ bí ẩn nhưng mất toàn bộ ký ức 5 năm trước. Trở về quê hương với một bàn tay giả và vết sẹo chạy dài từ thái dương xuống hàm. Bên trong vẻ lạnh lùng là người đang chật vật kiếm tìm sự thật về danh tính thật sự của mình.
+
+# ─────────────────────────────────────────────────
+# [ADVANCED] — Cài đặt nâng cao
+# crueltyLevel: normal | hard | hell
+# allowNsfw: true | false
+# ─────────────────────────────────────────────────
+[ADVANCED]
+writingStyle: Văn phong noir tối, câu ngắn gọn súc tích, nhiều đoạn hồi ký xen kẽ hiện tại
+crueltyLevel: hard
+aiInstructions: Nhân vật chính không bao giờ xin lỗi. Giữ bí ẩn về danh tính thật ít nhất 30 chương đầu. Các cảnh hành động nên chi tiết và thực tế, không anh hùng hóa.
+allowNsfw: false
+
+# ─────────────────────────────────────────────────
+# [WORLD] — Thế giới quan (mỗi dòng = 1 thực thể)
+# type: faction | location | item | event
+# Các field phân tách bằng ký tự |
+# ─────────────────────────────────────────────────
+[WORLD]
+type: location | name: Cảng Đêm Tối | description: Khu cảng biển bỏ hoang nơi nhân vật chính được tìm thấy không tỉnh thức 5 năm trước. Dân địa phương đồn đại có người biến mất ở đây mỗi tháng trăng tròn. | conflict: Nhân vật chính bị ám ảnh phải quay lại đây nhưng luôn gặp nguy hiểm
+type: location | name: Khách sạn Minh Nguyệt | description: Nơi nhân vật chính tạm trú, được quản lý bởi một bà lão biết nhiều hơn những gì bà nói. Phòng 404 luôn bị khóa. | conflict: Ai đó đang theo dõi từng bước của nhân vật chính từ đây
+type: faction | name: Tổ Chức Bóng Tối "Hải Yến" | description: Tổ chức tội phạm kiểm soát thành phố, chuyên buôn bán thông tin tình báo. Dùng logo con én đen làm dấu hiệu nhận dạng. | conflict: Họ biết danh tính thật của nhân vật chính và muốn anh im lặng vĩnh viễn
+type: faction | name: Đơn vị Đặc Nhiệm Gamma | description: Cựu đồng đội của nhân vật chính, hiện đang hoạt động bí mật dưới vỏ bọc công ty bảo vệ tư nhân. | conflict: Một nửa muốn tìm lại anh, một nửa được lệnh thủ tiêu anh
+type: item | name: Chiếc USB Đen | description: Thiết bị nhỏ được khâu trong lớp lót áo khoác của nhân vật chính, chứa dữ liệu mã hóa chưa giải mã được. | conflict: Nhiều thế lực đang săn lùng chiếc USB này, kể cả người tự nhận là đồng đội cũ
+type: event | name: Vụ Nổ Cầu Hà Đông | description: Sự kiện 5 năm trước, xóa sổ toàn bộ đơn vị Gamma và xóa ký ức nhân vật chính. Chính phủ tuyên bố tai nạn. | conflict: Hình ảnh mảnh vỡ từ vụ nổ cứ hiện về trong giấc mơ của nhân vật chính

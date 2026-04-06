@@ -1,37 +1,75 @@
 import type { IStoryRepository } from './interfaces/IStoryRepository.js';
 import type { IStoryService } from './interfaces/IStoryService.js';
+import type { IChapterRepository } from './interfaces/IChapterRepository.js';
 
 export class StoryService implements IStoryService {
-  constructor(private readonly storyRepo: IStoryRepository) {}
+  constructor(
+    private readonly storyRepo: IStoryRepository,
+    private readonly chapterRepo: IChapterRepository
+  ) {}
 
   async getStoriesByAuthor(authorId: string): Promise<any[]> {
     return this.storyRepo.findByAuthor(authorId);
   }
 
+  async getStoryById(id: string): Promise<any | null> {
+    return this.storyRepo.findById(id);
+  }
+
   async createGeneratedStory(authorId: string, blueprint: any): Promise<any> {
-    // Lấy theme/genre đầu tiên, hoặc map từ original_ideas
-    const { original_ideas, expanded_universe } = blueprint;
-    
-    const theme = original_ideas?.themes?.[0] || '';
-    const genre = original_ideas?.genres?.[0] || '';
-    const setting = expanded_universe?.setting_details || original_ideas?.settings?.join(', ') || '';
-    
-    // Lưu story cơ bản. (Thực tế Prisma Schema có thể cần update để lưu JSON, nhưng hiện tại dựa theo Schema cũ)
+    const { inputTitle, inputMcName, original_ideas, expanded_universe } = blueprint;
+
+    // ── Lấy title từ input gốc của user (ưu tiên) hoặc AI-generated
+    const title =
+      (inputTitle && inputTitle.trim())
+        ? inputTitle.trim()
+        : expanded_universe?.title || original_ideas?.themes?.[0] || 'Truyện chưa đặt tên';
+
+    const genre   = original_ideas?.genres?.[0] || '';
+    const theme   = original_ideas?.themes?.[0] || '';
+    const setting = expanded_universe?.setting_details
+      || original_ideas?.settings?.join(', ')
+      || '';
+
+    // ── Summary: lấy từ act_1_setup của AI hoặc plot_ideas đầu tiên
+    const summary = expanded_universe?.plot_structure?.act_1_setup?.substring(0, 300)
+      || original_ideas?.plot_ideas?.[0]
+      || '';
+
+    // ── Lưu story vào DB (bao gồm blueprintJson để persist)
     const newStory = await this.storyRepo.create({
       authorId,
-      title: 'Truyện mới tạo từ Idea', // Có thể dùng AI sinh Title riêng
-      summary: expanded_universe?.plot_structure?.act_1_setup?.substring(0, 200) || '',
+      title,
+      summary,
       genre,
       theme,
       setting,
+      mcName: inputMcName || original_ideas?.characters?.[0] || undefined,
+      blueprintJson: blueprint, // Persist toàn bộ blueprint để reload sau
+      firstChapterContent: blueprint.firstChapterContent, // Thêm nội dung chương 1 nếu có
     });
 
-    // TODO: Lưu expanded_universe.characters vào bảng Character (nếu có schema)
-    // TODO: Lưu plot_structure vào bảng Outline/Chapter (nếu có schema)
-    
     return {
       ...newStory,
-      _generatedBlueprint: blueprint // Trả lại payload để Client render preview
+      _generatedBlueprint: blueprint, // Trả lại payload để Client render preview ngay
     };
   }
+
+  async deleteStory(id: string, authorId: string): Promise<boolean> {
+    const story = await this.storyRepo.findById(id);
+    if (!story) return false;
+    if (story.authorId !== authorId) throw new Error('Bạn không có quyền xóa truyện này');
+    
+    return this.storyRepo.delete(id);
+  }
+
+  async addChapter(storyId: string, chapterIndex: number, content: string): Promise<any> {
+    return this.chapterRepo.create({
+      storyId,
+      chapterIndex,
+      title: `Chương ${chapterIndex}`,
+      content
+    });
+  }
 }
+

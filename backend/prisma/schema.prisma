@@ -53,6 +53,7 @@ model Story {
   writingStyle   String?
   crueltyLevel   String?
   aiInstructions String?   @db.Text
+  blueprintJson  Json?                          // AI-generated blueprint (persist để reload)
   views          Int       @default(0)
   likes          Int       @default(0)
   rating         Float     @default(0.0)

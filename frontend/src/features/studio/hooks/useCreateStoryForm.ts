@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { StoryFormData } from '../types/studio';
+import type { WorldEntity } from '../types/studio';
 import { useWorldEntities } from './useWorldEntities';
 import { ApiService } from '../../../services/api';
 
@@ -45,6 +46,29 @@ export const useCreateStoryForm = () => {
     setBaseFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
+  /**
+   * Import dữ liệu từ file .txt đã được parse
+   * Merge vào form hiện tại (override các field có giá trị)
+   */
+  const importFromTxt = (parsed: Partial<StoryFormData>) => {
+    const { worldEntities: parsedEntities, ...baseFields } = parsed;
+    // Chỉ merge các field có giá trị (tránh override field user đã điền bằng empty string)
+    setBaseFormData(prev => {
+      const merged = { ...prev };
+      (Object.keys(baseFields) as Array<keyof typeof baseFields>).forEach(key => {
+        const val = baseFields[key];
+        if (val !== undefined && val !== '') {
+          (merged as any)[key] = val;
+        }
+      });
+      return merged;
+    });
+    // Override worldEntities nếu có
+    if (parsedEntities && parsedEntities.length > 0) {
+      resetEntities(parsedEntities as WorldEntity[]);
+    }
+  };
+
   const resetFormData = () => {
     setBaseFormData(INITIAL_BASE_DATA);
     resetEntities();
@@ -78,6 +102,7 @@ export const useCreateStoryForm = () => {
     handleRemoveEntity,
     handleEntityChange,
     handleSubmit,
-    resetFormData
+    resetFormData,
+    importFromTxt,
   };
 };

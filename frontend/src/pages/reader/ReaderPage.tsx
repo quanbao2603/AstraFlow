@@ -17,17 +17,37 @@ const ReaderPage: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isChaptersOpen, setIsChaptersOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const fetchStory = async () => {
+    if (storyId) {
+      const data = await ApiService.getStoryById(storyId);
+      setStory(data);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStory = async () => {
-      if (storyId) {
-        const data = await ApiService.getStoryById(storyId);
-        setStory(data);
-        setLoading(false);
-      }
-    };
     fetchStory();
   }, [storyId]);
+
+  const handleGenerateNextChapter = async () => {
+    if (!storyId) return;
+    setIsGenerating(true);
+    try {
+      await ApiService.generateNextChapter(storyId);
+      // Fetch latest story to get new chapters
+      await fetchStory();
+      // Move to the new chapter
+      if (story && story.chapters) {
+        setCurrentChapterIndex(story.chapters.length);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Có lỗi xảy ra khi tạo chương mới');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   if (loading) return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -66,11 +86,26 @@ const ReaderPage: React.FC = () => {
         />
 
         {chapters.length > 0 ? (
-          <ReadingView 
-            content={currentChapter.content}
-            fontSize={fontSize}
-            theme={theme}
-          />
+          <div className="flex flex-col gap-6">
+            <ReadingView 
+              content={currentChapter.content}
+              fontSize={fontSize}
+              theme={theme}
+            />
+            
+            {currentChapterIndex === chapters.length - 1 && (
+              <div className="flex justify-center mb-12">
+                <button
+                  onClick={handleGenerateNextChapter}
+                  disabled={isGenerating}
+                  className="flex items-center gap-3 px-8 py-4 bg-slate-900 border border-violet-500/30 text-white rounded-3xl hover:bg-slate-800 hover:border-violet-500 transition-all shadow-xl shadow-violet-500/10 font-bold group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Sparkles className={`w-5 h-5 text-violet-400 group-hover:animate-pulse ${isGenerating ? 'animate-spin' : ''}`} />
+                  {isGenerating ? 'AI Đang rặn chữ...' : '🪄 Dùng AI Viết Chương Tiếp Theo'}
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="mt-20 flex flex-col items-center justify-center text-center p-12 bg-slate-900/40 backdrop-blur-md rounded-3xl border border-slate-800 border-dashed">
             <Sparkles className="w-16 h-16 text-violet-400 mb-6 animate-bounce" />

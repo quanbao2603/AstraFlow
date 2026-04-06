@@ -14,5 +14,8 @@ export interface IStoryRepository {
     mcGender?: string;
     writingStyle?: string;
     crueltyLevel?: string;
+    blueprintJson?: any;
+    firstChapterContent?: string;
   }): Promise<Story>;
+  delete(id: string): Promise<boolean>;
 }

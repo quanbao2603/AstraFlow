@@ -65,9 +65,40 @@ export const ApiService = {
     }
   },
 
+  generateNextChapter: async (storyId: string): Promise<any> => {
+    try {
+      const headers = await ApiService.getHeaders();
+      const response = await fetch(`${API_BASE_URL}/stories/${storyId}/chapters/generate`, {
+        method: 'POST',
+        headers
+      });
+      
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || `Lỗi từ Server (${response.status})`);
+      }
+      return result.data;
+    } catch (error: any) {
+      console.error("Error generating next chapter API:", error);
+      throw error;
+    }
+  },
+
   deleteStory: async (id: string): Promise<void> => {
-    const stories = await ApiService.getStories();
-    const filtered = stories.filter((s: Story) => s.id !== id);
-    localStorage.setItem('astra_flow_stories', JSON.stringify(filtered));
+    try {
+      const headers = await ApiService.getHeaders();
+      const response = await fetch(`${API_BASE_URL}/stories/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || `Lỗi từ Server (${response.status})`);
+      }
+    } catch (error: any) {
+      console.error("Error deleting story API:", error);
+      throw error;
+    }
   }
 };

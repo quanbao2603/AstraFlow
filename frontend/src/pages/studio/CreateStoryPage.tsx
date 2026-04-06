@@ -5,6 +5,7 @@ import CoreSettings from '../../features/studio/components/CreateStory/CoreSetti
 import MainCharacter from '../../features/studio/components/CreateStory/MainCharacter';
 import AdvancedSettings from '../../features/studio/components/CreateStory/AdvancedSettings';
 import WorldBuilding from '../../features/studio/components/CreateStory/WorldBuilding';
+import TxtUploadButton from '../../features/studio/components/CreateStory/TxtUploadButton';
 import { useCreateStoryForm } from '../../features/studio/hooks/useCreateStoryForm';
 
 export default function CreateStoryPage() {
@@ -17,7 +18,8 @@ export default function CreateStoryPage() {
     handleRemoveEntity,
     handleEntityChange,
     handleSubmit,
-    resetFormData
+    resetFormData,
+    importFromTxt,
   } = useCreateStoryForm();
 
   return (
@@ -32,6 +34,9 @@ export default function CreateStoryPage() {
       </div>
 
       <div className="flex flex-col gap-8">
+
+        {/* Import từ file .txt */}
+        <TxtUploadButton onImport={importFromTxt} />
 
         {/* Step 1: Core Settings */}
         <CoreSettings formData={formData} onChange={handleChange} />
