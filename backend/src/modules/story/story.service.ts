@@ -63,6 +63,14 @@ export class StoryService implements IStoryService {
     return this.storyRepo.delete(id);
   }
 
+  async updateStory(id: string, authorId: string, data: any): Promise<any> {
+    const story = await this.storyRepo.findById(id);
+    if (!story) throw new Error('Truyện không tồn tại');
+    if (story.authorId !== authorId) throw new Error('Bạn không có quyền chỉnh sửa truyện này');
+    
+    return this.storyRepo.update(id, data);
+  }
+
   async addChapter(storyId: string, chapterIndex: number, content: string): Promise<any> {
     return this.chapterRepo.create({
       storyId,

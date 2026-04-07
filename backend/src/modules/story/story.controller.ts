@@ -143,4 +143,22 @@ export class StoryController {
       return res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
   };
+  /**
+   * [PUT] /api/v1/stories/:id
+   * Cập nhật thông tin truyện
+   */
+  updateStory = async (req: any, res: Response) => {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const updatedStory = await this.storyService.updateStory(id, req.user.id, data);
+      res.json({ success: true, data: updatedStory });
+    } catch (error: any) {
+      console.error('[StoryController.updateStory]', error);
+      if (error.message.includes('quyền chỉnh sửa')) {
+        return res.status(403).json({ success: false, error: error.message });
+      }
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  };
 }

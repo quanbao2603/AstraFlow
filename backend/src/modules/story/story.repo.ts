@@ -49,6 +49,13 @@ export class StoryRepository implements IStoryRepository {
     return prisma.story.create({ data: createInput });
   }
 
+  async update(id: string, data: Partial<any>) {
+    return prisma.story.update({
+      where: { id },
+      data
+    });
+  }
+
   async delete(id: string): Promise<boolean> {
     try {
       await prisma.story.delete({ where: { id } });

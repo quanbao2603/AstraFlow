@@ -17,5 +17,6 @@ export interface IStoryRepository {
     blueprintJson?: any;
     firstChapterContent?: string;
   }): Promise<Story>;
+  update(id: string, data: Partial<Story>): Promise<Story>;
   delete(id: string): Promise<boolean>;
 }

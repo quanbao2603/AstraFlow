@@ -158,7 +158,7 @@ export default function ProfilePage() {
               stories.map((story) => (
                 <Link
                   key={story.id}
-                  to={`/story/${story.id}`}
+                  to={`/read/${story.id}`}
                   className="group bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 rounded-2xl overflow-hidden transition-all hover:-translate-y-1"
                 >
                   <div className="aspect-[16/9] bg-slate-800 relative overflow-hidden">

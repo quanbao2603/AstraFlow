@@ -3,10 +3,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Story } from '../../types/story';
 import { ApiService } from '../../services/api';
+import CoverImageUpload from '../../components/common/CoverImageUpload';
+import { X, Image as ImageIcon } from 'lucide-react';
+import supabase from '../../config/supabase';
 
 export default function LibraryPage() {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingCoverFor, setEditingCoverFor] = useState<Story | null>(null);
 
   const fetchStories = async () => {
     const data = await ApiService.getStories();
@@ -21,8 +25,29 @@ export default function LibraryPage() {
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     if (confirm('Bạn có chắc chắn muốn xóa tác phẩm này?')) {
+      const storyToDelete = stories.find(s => s.id === id);
+      
+      // Dọn dẹp rác Storage: Xóa file ảnh bìa trước khi xóa truyện
+      if (storyToDelete?.coverImage) {
+        const pathPart = storyToDelete.coverImage.split('/covers/').pop();
+        if (pathPart) {
+          supabase.storage.from('covers').remove([pathPart]).catch(console.warn);
+        }
+      }
+
       await ApiService.deleteStory(id);
       fetchStories();
+    }
+  };
+
+  const handleUpdateCover = async (publicUrl: string) => {
+    if (!editingCoverFor) return;
+    try {
+      await ApiService.updateStory(editingCoverFor.id, { coverImage: publicUrl });
+      setEditingCoverFor(null);
+      fetchStories();
+    } catch (e) {
+      alert('Có lỗi xảy ra khi lưu ảnh bìa.');
     }
   };
 
@@ -66,15 +91,24 @@ export default function LibraryPage() {
             >
               <div className="aspect-[3/4] relative overflow-hidden">
                 <img 
-                  src={story.coverUrl || 'https://via.placeholder.com/300x400/0f172a/1e293b?text=AstraFlow'} 
+                  src={story.coverImage || 'https://via.placeholder.com/300x400/0f172a/1e293b?text=AstraFlow'} 
                   alt={story.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
                 
                 <button 
+                  onClick={(e) => { e.preventDefault(); setEditingCoverFor(story); }}
+                  className="absolute top-3 right-12 p-2 bg-violet-500/10 backdrop-blur-md border border-violet-500/20 text-violet-400 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-violet-500 hover:text-white"
+                  title="Đổi ảnh bìa"
+                >
+                  <ImageIcon size={16} />
+                </button>
+
+                <button 
                   onClick={(e) => handleDelete(story.id, e)}
                   className="absolute top-3 right-3 p-2 bg-red-500/10 backdrop-blur-md border border-red-500/20 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                  title="Xóa truyện"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -101,6 +135,33 @@ export default function LibraryPage() {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* Modal Cập nhật Ảnh bìa */}
+      {editingCoverFor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm p-6 shadow-2xl relative">
+            <button 
+              onClick={() => setEditingCoverFor(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+            <h3 className="text-xl font-bold text-white mb-2">Đổi ảnh bìa</h3>
+            <p className="text-sm text-slate-400 mb-6 truncate">{editingCoverFor.title}</p>
+            
+            <div className="flex justify-center mb-6">
+              <CoverImageUpload 
+                currentImageUrl={editingCoverFor.coverImage} 
+                onUploadSuccess={handleUpdateCover} 
+              />
+            </div>
+            
+            <div className="text-center text-xs text-slate-500">
+              Ảnh bìa sẽ được cập nhật tự động sau khi tải lên thành công.
+            </div>
+          </div>
         </div>
       )}
     </div>

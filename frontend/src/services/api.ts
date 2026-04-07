@@ -84,6 +84,26 @@ export const ApiService = {
     }
   },
 
+  updateStory: async (id: string, data: Partial<Story>): Promise<Story> => {
+    try {
+      const headers = await ApiService.getHeaders();
+      const response = await fetch(`${API_BASE_URL}/stories/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || `Lỗi từ Server (${response.status})`);
+      }
+      return result.data;
+    } catch (error: any) {
+      console.error("Error updating story API:", error);
+      throw error;
+    }
+  },
+
   deleteStory: async (id: string): Promise<void> => {
     try {
       const headers = await ApiService.getHeaders();

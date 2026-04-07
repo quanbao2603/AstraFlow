@@ -28,7 +28,7 @@ export interface Story {
   id: string;
   title: string;
   description: string;
-  coverUrl?: string;
+  coverImage?: string;
   genre: string;
   genres?: string[];
   theme: string;

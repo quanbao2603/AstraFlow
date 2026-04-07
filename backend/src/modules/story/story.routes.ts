@@ -40,5 +40,11 @@ export function createStoryRouter(storyController: StoryController): Router {
    */
   router.delete('/:id', verifyToken, syncProfile, storyController.deleteStory);
 
+  /**
+   * [PUT] /api/v1/stories/:id
+   * Cập nhật Story
+   */
+  router.put('/:id', verifyToken, syncProfile, storyController.updateStory);
+
   return router;
 }
