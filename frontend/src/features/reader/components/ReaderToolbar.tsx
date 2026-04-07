@@ -1,25 +1,33 @@
 import React from 'react';
-import { Settings, ChevronLeft, ChevronRight, List } from 'lucide-react';
+import { Settings, List, ArrowLeft, Headphones } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ReaderToolbarProps {
-  onPrev: () => void;
-  onNext: () => void;
   onOpenSettings: () => void;
   onOpenChapters: () => void;
+  onToggleAudioMode: () => void;
+  isAudioMode: boolean;
   title: string;
-  hasPrev: boolean;
-  hasNext: boolean;
 }
 
 const ReaderToolbar: React.FC<ReaderToolbarProps> = ({ 
-  onPrev, onNext, onOpenSettings, onOpenChapters, title, hasPrev, hasNext 
+  onOpenSettings, onOpenChapters, onToggleAudioMode, isAudioMode, title
 }) => {
+  const navigate = useNavigate();
   return (
     <div className="flex items-center justify-between bg-slate-900/80 backdrop-blur-md border border-slate-800 p-4 rounded-2xl mb-6 sticky top-4 z-10 shadow-lg">
       <div className="flex items-center gap-3">
         <button 
-          onClick={onOpenChapters}
+          onClick={() => navigate('/studio/library')}
           className="p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-all"
+          title="Quay lại thư viện"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <button 
+          onClick={onOpenChapters}
+          className="p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-all md:hidden"
+          title="Danh sách chương"
         >
           <List size={20} />
         </button>
@@ -29,23 +37,13 @@ const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="flex items-center bg-slate-800 rounded-xl p-1">
-          <button 
-            disabled={!hasPrev}
-            onClick={onPrev}
-            className="p-2 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="w-px h-4 bg-slate-700 mx-1" />
-          <button 
-            disabled={!hasNext}
-            onClick={onNext}
-            className="p-2 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+        <button 
+          onClick={onToggleAudioMode}
+          className={`p-2.5 rounded-xl transition-all ${isAudioMode ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
+          title="Sách nói (Audio Book)"
+        >
+          <Headphones size={20} />
+        </button>
 
         <button 
           onClick={onOpenSettings}

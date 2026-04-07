@@ -1,4 +1,4 @@
-import { BookOpen, PlusCircle, Trash2 } from 'lucide-react';
+import { BookOpen, PlusCircle, Trash2, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Story } from '../../types/story';
@@ -37,6 +37,15 @@ export default function LibraryPage() {
 
       await ApiService.deleteStory(id);
       fetchStories();
+    }
+  };
+
+  const handleExport = async (e: React.MouseEvent, storyId: string, title: string) => {
+    e.preventDefault();
+    try {
+      await ApiService.exportStory(storyId, title);
+    } catch (error) {
+      alert('Có lỗi xảy ra khi tải xuống.');
     }
   };
 
@@ -97,21 +106,31 @@ export default function LibraryPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
                 
-                <button 
-                  onClick={(e) => { e.preventDefault(); setEditingCoverFor(story); }}
-                  className="absolute top-3 right-12 p-2 bg-violet-500/10 backdrop-blur-md border border-violet-500/20 text-violet-400 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-violet-500 hover:text-white"
-                  title="Đổi ảnh bìa"
-                >
-                  <ImageIcon size={16} />
-                </button>
+                <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button 
+                    onClick={(e) => handleExport(e, story.id, story.title)}
+                    className="p-2 bg-blue-500/10 backdrop-blur-md border border-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white"
+                    title="Tải về (.txt)"
+                  >
+                    <Download size={16} />
+                  </button>
 
-                <button 
-                  onClick={(e) => handleDelete(story.id, e)}
-                  className="absolute top-3 right-3 p-2 bg-red-500/10 backdrop-blur-md border border-red-500/20 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
-                  title="Xóa truyện"
-                >
-                  <Trash2 size={16} />
-                </button>
+                  <button 
+                    onClick={(e) => { e.preventDefault(); setEditingCoverFor(story); }}
+                    className="p-2 bg-violet-500/10 backdrop-blur-md border border-violet-500/20 text-violet-400 rounded-lg hover:bg-violet-500 hover:text-white"
+                    title="Đổi ảnh bìa"
+                  >
+                    <ImageIcon size={16} />
+                  </button>
+
+                  <button 
+                    onClick={(e) => handleDelete(story.id, e)}
+                    className="p-2 bg-red-500/10 backdrop-blur-md border border-red-500/20 text-red-500 rounded-lg hover:bg-red-500 hover:text-white"
+                    title="Xóa truyện"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
 
                 <div className="absolute bottom-3 left-3 right-3">
                   <span className="px-2 py-1 rounded-md bg-violet-500/20 backdrop-blur-md border border-violet-500/30 text-[10px] uppercase tracking-wider font-bold text-violet-300">

@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import https from 'https';
 import type { IStoryService } from './interfaces/IStoryService.js';
 import type { GenerateStoryUseCase } from './useCases/generateStory.useCase.js';
 import type { GenerateNextChapterUseCase } from './useCases/generateNextChapter.useCase.js';
@@ -93,8 +94,20 @@ export class StoryController {
          return res.status(403).json({ success: false, error: 'Bạn không có quyền thao tác trên truyện này' });
       }
 
+      if (story.status === 'completed') {
+         return res.status(400).json({ success: false, error: 'Truyện này đã kết thúc, không thể sinh thêm chương mới' });
+      }
+
       // Calculate context
       const nextChapterIndex = (story.chapters?.length || 0) + 1;
+      
+      // Determine if this is the final chapter
+      const expectedChapters = (story.blueprintJson as any)?.expected_chapters || 10;
+      if (nextChapterIndex > expectedChapters) {
+         return res.status(400).json({ success: false, error: 'Trượt chỉ tiêu số chương. Truyện này đã đạt giới hạn chương tối đa.' });
+      }
+      const isFinalChapter = nextChapterIndex === expectedChapters;
+
       let previousContext = 'Đây là chương đầu tiên';
       
       if (story.chapters && story.chapters.length > 0) {
@@ -108,11 +121,17 @@ export class StoryController {
         userId,
         story.blueprintJson,
         nextChapterIndex,
-        previousContext
+        previousContext,
+        isFinalChapter
       );
 
       // Save to DB
       const newChapter = await this.storyService.addChapter(id, nextChapterIndex, chapterContent);
+
+      // Nếu đây là chương cuối, cập nhật trạng thái truyện thành completed
+      if (isFinalChapter) {
+        await this.storyService.updateStory(id, userId, { status: 'completed' });
+      }
 
       return res.json({ success: true, data: newChapter });
     } catch (error: any) {
@@ -160,5 +179,74 @@ export class StoryController {
       }
       res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
+  };
+
+  /**
+   * [GET] /api/v1/stories/:id/export
+   * Xuất truyện ra file TXT
+   */
+  exportStory = async (req: any, res: Response) => {
+    try {
+      const { id } = req.params;
+      const story = await this.storyService.getStoryById(id);
+      if (!story) {
+        return res.status(404).json({ success: false, error: 'Truyện không tồn tại' });
+      }
+      if (story.authorId !== req.user.id && story.status !== 'published') {
+        return res.status(403).json({ success: false, error: 'Bạn không có quyền tải truyện này' });
+      }
+
+      let content = `TÊN TRUYỆN: ${story.title.toUpperCase()}\n`;
+      content += `TÓM TẮT: ${story.summary || ''}\n`;
+      content += `THỂ LOẠI: ${story.genre || ''}\n`;
+      content += `==============================================\n\n`;
+
+      if (story.chapters && story.chapters.length > 0) {
+        const sortedChapters = [...story.chapters].sort((a, b) => a.chapterIndex - b.chapterIndex);
+        for (const chapter of sortedChapters) {
+          content += `CHƯƠNG ${chapter.chapterIndex}${chapter.title ? `: ${chapter.title}` : ''}\n\n`;
+          content += `${chapter.content}\n\n`;
+          content += `----------------------------------------------\n\n`;
+        }
+      } else {
+        content += `Truyện chưa có chương nào.\n`;
+      }
+
+      // Format filename, e.g. replacing spaces with hyphens, removing special chars
+      let safeTitle = story.title.replace(/[\/\\?%*:|"<>]/g, '').replace(/\s+/g, '-');
+      const fileName = `${safeTitle}.txt`;
+      const encodedFileName = encodeURIComponent(fileName);
+
+      res.setHeader('Content-disposition', `attachment; filename*=UTF-8''${encodedFileName}`);
+      res.setHeader('Content-type', 'text/plain; charset=utf-8');
+      return res.send(content);
+    } catch (error: any) {
+      console.error('[StoryController.exportStory]', error);
+      return res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  };
+
+  /**
+   * [GET] /api/v1/stories/tts/proxy
+   * Proxy Google TTS để vượt rào cản từ trình duyệt
+   */
+  proxyGoogleTts = (req: Request, res: Response) => {
+    const text = req.query.text as string;
+    if (!text) return res.status(400).send('No text provided');
+
+    const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=vi&client=tw-ob`;
+
+    https.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0'
+      }
+    }, (externalRes) => {
+      res.setHeader('Content-Type', 'audio/mpeg');
+      // Pass through Google's headers if needed, or just pipe
+      externalRes.pipe(res);
+    }).on('error', (err) => {
+      console.error('[StoryController.proxyGoogleTts]', err);
+      res.status(500).send('Error fetching TTS');
+    });
   };
 }

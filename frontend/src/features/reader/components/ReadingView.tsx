@@ -7,16 +7,16 @@ interface ReadingViewProps {
 }
 
 const ReadingView: React.FC<ReadingViewProps> = ({ content, fontSize, theme }) => {
-  const themes = {
-    light: 'bg-white text-slate-900',
-    dark: 'bg-slate-950 text-slate-200',
-    sepia: 'bg-[#f4ecd8] text-[#5b4636]'
+  const containerThemes = {
+    light: 'text-slate-900',
+    dark: 'text-slate-200',
+    sepia: 'text-[#5b4636]'
   };
 
   return (
-    <div className={`min-h-[70vh] rounded-3xl p-8 md:p-12 shadow-2xl transition-colors duration-500 ${themes[theme]}`}>
+    <div className={`transition-colors duration-500 ${containerThemes[theme]}`}>
       <div 
-        className="max-w-2xl mx-auto leading-loose whitespace-pre-wrap font-sans text-justify selection:bg-violet-500/30"
+        className="max-w-2xl mx-auto leading-[2.2] whitespace-pre-wrap font-sans text-justify selection:bg-violet-500/30"
         style={{ fontSize: `${fontSize}px` }}
       >
         {content || (

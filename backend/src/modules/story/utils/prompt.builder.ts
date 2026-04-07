@@ -98,10 +98,15 @@ YÊU CẦU NGHIÊM NGẶT:
 - Chỉ trả về nội dung trực tiếp của chương, không dạo đầu, không giải thích.`;
   }
 
-  static buildNextChapterUserPrompt(blueprint: any, nextChapterIndex: number, previousContext: string): string {
+  static buildNextChapterUserPrompt(blueprint: any, nextChapterIndex: number, previousContext: string, isFinalChapter: boolean = false): string {
+    let finalRule = '';
+    if (isFinalChapter) {
+        finalRule = `\n\nCẢNH BÁO QUAN TRỌNG: Đây là CHƯƠNG CUỐI CÙNG của bộ truyện. Nhiệm vụ tối thượng của bạn là BẮT BUỘC đưa ra phân cảnh đỉnh điểm (Climax) và Dọn dẹp/Tháo gỡ tất cả mọi nút thắt (Resolution). Hãy mang tới một cái kết trọn vẹn, thuyết phục nhất.\n\n`;
+    }
+
     return `Dưới đây là Dàn ý Thế giới, Nhân vật và Cốt Truyện gốc (Blueprint):
 ${JSON.stringify(blueprint, null, 2)}
-
+${finalRule}
 ---
 
 Và dưới đây là diễn biến tính đến chương vừa rồi (Tóm lược hoặc trích dẫn):

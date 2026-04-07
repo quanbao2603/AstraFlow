@@ -47,6 +47,8 @@ export interface Story {
   // Content
   chapters: Chapter[];
   worldEntities: WorldEntity[];
+  blueprintJson?: any;
+  status?: string;
   
   // Metadata
   author?: Author;

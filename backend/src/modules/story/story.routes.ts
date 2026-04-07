@@ -17,6 +17,18 @@ export function createStoryRouter(storyController: StoryController): Router {
   router.get('/', verifyToken, syncProfile, storyController.getStories);
 
   /**
+   * [GET] /api/v1/stories/:id/export
+   * Tải truyện về máy dươi định dạng .txt
+   */
+  router.get('/:id/export', verifyToken, syncProfile, storyController.exportStory);
+
+  /**
+   * [GET] /api/v1/stories/tts/proxy
+   * Proxy Google TTS để vượt rào (No auth needed as it's just audio proxy, or auth if desired, let's keep it open for the Audio tag without needing to attach Bearer token)
+   */
+  router.get('/tts/proxy', storyController.proxyGoogleTts);
+
+  /**
    * [GET] /api/v1/stories/:id
    * Lấy chi tiết một Story (kèm blueprint nếu là của chính user)
    */

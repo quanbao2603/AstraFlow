@@ -8,7 +8,7 @@ export class GenerateNextChapterUseCase {
     private readonly llmProviders: Record<string, ILLMProvider>
   ) {}
 
-  async execute(userId: string, blueprint: any, nextChapterIndex: number, previousContext: string): Promise<string> {
+  async execute(userId: string, blueprint: any, nextChapterIndex: number, previousContext: string, isFinalChapter: boolean = false): Promise<string> {
     // 1. Kiểm tra cấu hình API Key
     const keyData = await this.apiKeyService.getDefaultKeyPlaintext(userId);
     if (!keyData) {
@@ -25,7 +25,7 @@ export class GenerateNextChapterUseCase {
     }
 
     const sysPrompt = PromptBuilder.buildNextChapterSystemPrompt();
-    const usrPrompt = PromptBuilder.buildNextChapterUserPrompt(blueprint, nextChapterIndex, previousContext);
+    const usrPrompt = PromptBuilder.buildNextChapterUserPrompt(blueprint, nextChapterIndex, previousContext, isFinalChapter);
 
     try {
       // jsonMode: false => trả text markdown cho văn xuôi
